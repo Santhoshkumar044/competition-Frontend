@@ -11,7 +11,7 @@ export default function UserDashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/profile", { credentials: "include" })
+    fetch("/api/profile", { credentials: "include" })
       .then(res => res.json())
       .then(data => setUser(data))
       .catch(err => console.error("Error fetching profile:", err));
@@ -30,7 +30,7 @@ export default function UserDashboard() {
       {/* Navbar */}
       <div className="flex justify-between items-center mb-8 border-b border-cyan-400 pb-4">
         <div className="flex space-x-10 text-lg font-semibold">
-          <button onClick={() => navigate("/home")} className="hover:underline">Home</button>
+          <button onClick={() => navigate("/")} className="hover:underline">Home</button>
           <button
             onClick={() => setActiveTab("competitions")}
             className={`transition duration-300 ${activeTab === "competitions" ? "text-cyan-400 underline underline-offset-4" : "hover:underline"}`}
@@ -61,7 +61,7 @@ export default function UserDashboard() {
                 Edit Profile
               </button>
               <button
-                onClick={() => (window.location.href = "http://localhost:5000/logout")}
+                onClick={() => (window.location.href = "/auth/logout")}
                 className="w-full text-left px-4 py-2 hover:bg-cyan-800"
               >
                 Sign out
@@ -79,7 +79,7 @@ export default function UserDashboard() {
             placeholder="Search..."
             className="w-full bg-white text-black px-5 py-2.5 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 border border-gray-300"
           />
-          <FaSearch className="absolute top-3.5 left-4 text-gray-500 text-sm" />
+          <FaSearch className="absolute top-3.5 left-4 text-gray-500 text-sm" /> 
         </div>
 
         <div className="flex flex-wrap gap-4 items-center text-sm">

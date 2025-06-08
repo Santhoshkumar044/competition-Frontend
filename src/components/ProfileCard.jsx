@@ -17,7 +17,7 @@ const ProfileCard = () => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/profile", {
+    fetch("/api/profile/me", {  //concern
       credentials: "include",
     })
       .then(res => res.json())
@@ -42,7 +42,7 @@ const ProfileCard = () => {
   };
 
   const handleSubmit = () => {
-    fetch("http://localhost:5000/api/profile", {
+    fetch("/api/profile/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,8 +51,8 @@ const ProfileCard = () => {
       body: JSON.stringify(formData),
     })
       .then(res => res.json())
-      .then(data => alert("Profile Updated Successfully!"))
-      .catch(err => alert("Error updating profile."));
+      .then(data => alert("Profile Updated Successfully!",data))//remove later
+      .catch(err => alert("Error updating profile.",err.message));//remove later
   };
 
   return (

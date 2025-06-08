@@ -15,10 +15,10 @@ export default function App() {
     <Router>
       <Routes>
         
-        <Route path="/" element={<UserDashboard />} />
+        {/*<Route path="/" element={<UserDashboard />} />  */}
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/home" element={<H />} />
+        <Route path="/" element={<H />} />
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/create-competition" element={<CreateCompetition />} />
         <Route path="/event-form" element={<EventForm />} />
