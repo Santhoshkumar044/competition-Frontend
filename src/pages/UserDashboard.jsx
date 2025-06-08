@@ -97,39 +97,53 @@ export default function UserDashboard() {
           </select>
         </div>
       </div>
-
       {/* Content */}
-      <div className="bg-[#1A0033]/70 p-10 border border-[#2F0A50] text-center text-gray-300">
+      <div className="space-y-6">
         {(activeTab === "competitions" ? competitions : events).length === 0 ? (
-          <p className="text-lg italic tracking-wide">No {activeTab} yet.</p>
+          <p className="text-lg italic tracking-wide text-center">No {activeTab} yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(activeTab === "competitions" ? competitions : events).map((item) => (
-              <div
-                key={item._id}
-                className="bg-[#260040] p-6 border border-cyan-400 shadow-sm text-left"
-              >
-                <h3 className="text-lg font-semibold text-white mb-1">
-                  {activeTab === "competitions" ? item.eventName : item.name}
-                </h3>
-                <p className="text-sm text-gray-300">{item.description}</p>
-                <p className="mt-2 text-sm text-cyan-200">Date: {item.date}</p>
-                <p className="text-sm text-cyan-200">Venue: {item.venue}</p>
-                <div className="mt-4 flex gap-2">
-                  <button className="bg-cyan-600 hover:bg-cyan-600 px-3 py-1 text-sm border border-green-700">
-                    Register
-                  </button>
-                  {item.source === "web" && activeTab === "competitions" && (
-                    <button className="bg-cyan-600 hover:bg-cyan-600 px-3 py-1 text-sm border border-yellow-700">
-                      Confirm
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+          (activeTab === "competitions" ? competitions : events).map((item) => (
+            <div
+              key={item._id}
+              className="w-full bg-[#260040] p-6 border border-cyan-400 shadow-sm text-left"
+            >
+          <h2 className="text-2xl font-semibold text-white mb-2">{item.title}</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm text-cyan-200 mb-4">
+            <p><span className="font-semibold text-white">Days Left:</span> {item.daysLeft}</p>
+            <p><span className="font-semibold text-white">Mode:</span> {item.mode}</p>
+            <p><span className="font-semibold text-white">Location:</span> {item.location}</p>
+            <p><span className="font-semibold text-white">Prize:</span> {item.prize}</p>
+            <p><span className="font-semibold text-white">Organiser:</span> {item.organiser}</p>
           </div>
-        )}
-      </div>
+
+          <div className="flex flex-wrap gap-4">
+            <button
+              className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 text-sm border border-green-700"
+              onClick={() => window.open(item.link, "_blank")}
+            >
+              View Competition
+            </button>
+
+            <button
+              className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 text-sm border border-yellow-300"
+              onClick={() => {
+                fetch("/api/profile", { credentials: "include" })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    alert(`Confirmed by ${data.name} for "${item.title}"`);
+                    console.log("User data:", data);
+                  })
+                  .catch((err) => console.error("Confirmation failed:", err));
+              }}
+            >
+              Confirm
+            </button>
+              </div>
+            </div>
+          ))
+          )}
+        </div>
     </div>
   );
 }
