@@ -20,7 +20,7 @@ export default function StudentChecklistForm() {
 
   const handleSubmit = () => {
     localStorage.setItem("checklistFields", JSON.stringify(selectedFields));
-    navigate("/admin");
+    navigate("/host-dashboard");
   };
 
   return (

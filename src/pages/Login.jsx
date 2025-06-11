@@ -7,8 +7,8 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-white font-['Outfit']">
-      <h1 className="text-4xl font-bold text-black mb-2">Campus Connect</h1>
-      <p className="text-lg text-gray-700 mb-6">Chennai Institute of Technology</p>
+      <h1 className="text-7xl font-bold text-black mb-4">Campus Connect</h1>
+      <p className="text-2xl text-gray-700 mb-6">Chennai Institute of Technology</p>
 
       <button
         onClick={handleGoogleLogin}
