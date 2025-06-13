@@ -6,7 +6,6 @@ export default function EditCompetition() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
   const [formData, setFormData] = useState({
     title: "",
     location: "",
