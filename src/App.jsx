@@ -48,6 +48,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import EventManagementApp from "./pages/Template";
 
+
 export default function App() {
   return (
     <Router>
