@@ -1,3 +1,39 @@
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import HomePage from "./pages/HomePage";
+// import H from "./pages/H";
+// import UserDashboard from './pages/UserDashboard';
+// import ProfilePage from "./pages/ProfilePage";
+// import CreateEvent from "./pages/CreateEvent";
+// import EventForm from "./pages/EventForm";
+// import CreateCompetition from "./pages/CreateCompetition";
+// import EditCompetition from "./pages/EditCompetition";
+// import EditEvent from "./pages/EditEvent";
+// import Login from "./pages/Login";
+// import AdminDashboard from "./pages/AdminDashboard"
+// import EventManagementApp from "./pages/Template"
+// export default function App() {
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/" element={<HomePage />}/>
+//         <Route path="/host-dashboard" element={<AdminDashboard />}/>
+//         <Route path="/user" element={<UserDashboard />} />
+//         <Route path="/profile" element={<ProfilePage />} />
+//         <Route path="/create-competition" element={<EditCompetition />} />
+//         <Route path="/create-event" element={<EditEvent />} />
+//         <Route path="/home" element={<H />} />
+//         <Route path="/create-event" element={<CreateEvent />} />
+//         <Route path="/create-competition" element={<CreateCompetition />} />
+//         <Route path="/event-form" element={<EventForm />} />
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/template" element={<EventManagementApp />} />
+        
+//         </Routes>
+//     </Router>
+//   );
+// }
+
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import H from "./pages/H";
@@ -6,25 +42,35 @@ import ProfilePage from "./pages/ProfilePage";
 import CreateEvent from "./pages/CreateEvent";
 import EventForm from "./pages/EventForm";
 import CreateCompetition from "./pages/CreateCompetition";
+import EditCompetition from "./pages/EditCompetition";
+import EditEvent from "./pages/EditEvent";
 import Login from "./pages/Login";
-import AdminDashboard from "./pages/AdminDashboard"
-import EventManagementApp from "./pages/Template"
+import AdminDashboard from "./pages/AdminDashboard";
+import EventManagementApp from "./pages/Template";
+
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />}/>
-        <Route path="/host-dashboard" element={<AdminDashboard />}/>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/host-dashboard" element={<AdminDashboard />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/home" element={<H />} />
-        <Route path="/create-event" element={<CreateEvent />} />
+        
+        {/* Create Pages */}
         <Route path="/create-competition" element={<CreateCompetition />} />
+        <Route path="/create-event" element={<CreateEvent />} />
+
+        {/* 🛠️ Add Edit Routes */}
+        <Route path="/edit-competition/:id" element={<EditCompetition />} />
+        <Route path="/edit-event/:id" element={<EditEvent />} />
+
         <Route path="/event-form" element={<EventForm />} />
+        <Route path="/home" element={<H />} />
         <Route path="/login" element={<Login />} />
         <Route path="/template" element={<EventManagementApp />} />
-        
-        </Routes>
+      </Routes>
     </Router>
   );
 }
+
