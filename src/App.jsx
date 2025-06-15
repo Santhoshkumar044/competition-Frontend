@@ -33,8 +33,10 @@
 //   );
 // }
 
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
+
 import HomePage from "./pages/HomePage";
 import H from "./pages/H";
 import UserDashboard from './pages/UserDashboard';
@@ -48,24 +50,31 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import EventManagementApp from "./pages/Template";
 
-
 export default function App() {
   return (
     <Router>
+      <ToastContainer 
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/host-dashboard" element={<AdminDashboard />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/profile" element={<ProfilePage />} />
-        
-        {/* Create Pages */}
         <Route path="/create-competition" element={<CreateCompetition />} />
         <Route path="/create-event" element={<CreateEvent />} />
-
-        {/* 🛠️ Add Edit Routes */}
         <Route path="/edit-competition/:id" element={<EditCompetition />} />
         <Route path="/edit-event/:id" element={<EditEvent />} />
-
         <Route path="/event-form" element={<EventForm />} />
         <Route path="/home" element={<H />} />
         <Route path="/login" element={<Login />} />
@@ -74,4 +83,3 @@ export default function App() {
     </Router>
   );
 }
-
