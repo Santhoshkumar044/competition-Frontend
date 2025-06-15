@@ -1,387 +1,380 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const CreateEvent = ({ onCreateEvent, onCreateTemplate, templates }) => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+export default function TemplatePage() {
+  const [templates, setTemplates] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    collegeName: '',
-    venueDetails: {
-      venueId: '',
-      roomName: '',
-      capacity: '',
-      location: ''
-    },
-    startTime: '',
-    endTime: '',
-    eventDate: ''
+    title: "",
+    description: "",
+    collegeName: "",
+    roomnumber: "",
+    eventDate: "",
+    startTime: "",
+    endTime: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
+  // Load templates from localStorage on component mount
+  useEffect(() => {
+    const savedTemplates = localStorage.getItem("eventTemplates");
+    if (savedTemplates) {
+      setTemplates(JSON.parse(savedTemplates));
+    }
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name.startsWith('venue.')) {
-      const venueField = name.split('.')[1];
-      setFormData(prev => ({
-        ...prev,
-        venueDetails: {
-          ...prev.venueDetails,
-          [venueField]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-
-    if (!formData.collegeName.trim()) {
-      newErrors.collegeName = 'College name is required';
-    }
-
-    if (!formData.venueDetails.venueId.trim()) {
-      newErrors['venue.venueId'] = 'Venue ID is required';
-    }
-
-    if (!formData.venueDetails.roomName.trim()) {
-      newErrors['venue.roomName'] = 'Room name is required';
-    }
-
-    if (!formData.venueDetails.capacity.trim()) {
-      newErrors['venue.capacity'] = 'Capacity is required';
-    } else if (isNaN(formData.venueDetails.capacity) || parseInt(formData.venueDetails.capacity) <= 0) {
-      newErrors['venue.capacity'] = 'Capacity must be a positive number';
-    }
-
-    if (!formData.venueDetails.location.trim()) {
-      newErrors['venue.location'] = 'Location is required';
-    }
-
-    if (!formData.startTime) {
-      newErrors.startTime = 'Start time is required';
-    }
-
-    if (!formData.endTime) {
-      newErrors.endTime = 'End time is required';
-    }
-
-    if (!formData.eventDate) {
-      newErrors.eventDate = 'Event date is required';
-    }
-
-    // Validate time logic
-    if (formData.startTime && formData.endTime) {
-      if (formData.startTime >= formData.endTime) {
-        newErrors.endTime = 'End time must be after start time';
-      }
-    }
-
-    // Validate date is not in the past
-    if (formData.eventDate) {
-      const selectedDate = new Date(formData.eventDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (selectedDate < today) {
-        newErrors.eventDate = 'Event date cannot be in the past';
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleCreateTemplate = () => {
+    setEditingTemplate(null);
+    setFormData({
+      title: "",
+      description: "",
+      collegeName: "",
+      roomnumber: "",
+      eventDate: "",
+      startTime: "",
+      endTime: "",
+    });
+    setShowCreateForm(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleEditTemplate = (template) => {
+    setEditingTemplate(template.id);
+    setFormData({
+      title: template.title,
+      description: template.description,
+      collegeName: template.collegeName,
+      roomnumber: template.roomnumber,
+      eventDate: template.eventDate,
+      startTime: template.startTime,
+      endTime: template.endTime,
+    });
+    setShowCreateForm(true);
+  };
+
+  const handleSaveTemplate = (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      setMessage('Please fix the errors below');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('');
-
     try {
-      // Create template first
-      const templateData = {
-        ...formData,
-        templateName: `${formData.title} Template`,
-        createdAt: new Date().toISOString()
+      const { title, description, collegeName, roomnumber, eventDate, startTime, endTime } = formData;
+
+      if (!title || !description || !collegeName || !roomnumber || !eventDate || !startTime || !endTime) {
+        throw new Error("All fields are required");
+      }
+
+      const newTemplate = {
+        id: editingTemplate || Date.now(),
+        title,
+        description,
+        collegeName,
+        roomnumber,
+        eventDate,
+        startTime,
+        endTime,
+        isPosted: false,
       };
 
-      const template = await onCreateTemplate(templateData);
-      
-      if (template) {
-        setMessage('Template created successfully!');
+      let updatedTemplates;
+      if (editingTemplate) {
+        updatedTemplates = templates.map(t => 
+          t.id === editingTemplate ? newTemplate : t
+        );
+      } else {
+        updatedTemplates = [...templates, newTemplate];
       }
 
-      // Create event
-      const event = onCreateEvent(formData);
-      
-      if (event) {
-        setMessage('Event created successfully!');
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
-      }
+      setTemplates(updatedTemplates);
+      localStorage.setItem("eventTemplates", JSON.stringify(updatedTemplates));
+      setShowCreateForm(false);
+      toast.success(`🎉 Template ${editingTemplate ? "updated" : "created"} successfully!`);
     } catch (error) {
-      setMessage('Error creating event. Please try again.');
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+      toast.error(`😟 ${error.message || "Failed to save template"}`);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      collegeName: '',
-      venueDetails: {
-        venueId: '',
-        roomName: '',
-        capacity: '',
-        location: ''
-      },
-      startTime: '',
-      endTime: '',
-      eventDate: ''
-    });
-    setErrors({});
-    setMessage('');
+  const handlePostTemplate = async (templateId) => {
+    try {
+      const templateToPost = templates.find(t => t.id === templateId);
+      if (!templateToPost) {
+        throw new Error("Template not found");
+      }
+
+      // Combine date + time into full Date objects
+      const formattedStartTime = new Date(`${templateToPost.eventDate}T${templateToPost.startTime}`);
+      const formattedEndTime = new Date(`${templateToPost.eventDate}T${templateToPost.endTime}`);
+
+      const payload = {
+        title: templateToPost.title,
+        description: templateToPost.description,
+        collegeName: templateToPost.collegeName,
+        roomnumber: templateToPost.roomnumber,
+        startTime: formattedStartTime.toISOString(),
+        endTime: formattedEndTime.toISOString(),
+      };
+
+      const response = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to post event");
+      }
+
+      // Update template to mark it as posted
+      const updatedTemplates = templates.map(t => 
+        t.id === templateId ? { ...t, isPosted: true } : t
+      );
+      setTemplates(updatedTemplates);
+      localStorage.setItem("eventTemplates", JSON.stringify(updatedTemplates));
+
+      toast.success("🎉 Event posted successfully to dashboard!");
+    } catch (error) {
+      toast.error(`😟 ${error.message || "Server error"}`);
+    }
+  };
+
+  const handleDeleteTemplate = (templateId) => {
+    const updatedTemplates = templates.filter(t => t.id !== templateId);
+    setTemplates(updatedTemplates);
+    localStorage.setItem("eventTemplates", JSON.stringify(updatedTemplates));
+    toast.success("Template deleted successfully");
   };
 
   return (
-    <div className="create-event">
-      <div className="nav-links">
-        <Link to="/" className="btn btn-outline">
-          ← Back to Dashboard
-        </Link>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 font-sans antialiased">
+      {/* Background Elements */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-60 right-20 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="form-container">
-        <h2>Create New Event</h2>
-        
-        {message && (
-          <div className={`alert ${message.includes('Error') ? 'alert-error' : 'alert-success'}`}>
-            {message}
+      {/* Header */}
+      <header className="relative bg-white shadow-lg z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-20 items-center">
+            <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center text-indigo-600 hover:text-indigo-800 px-4 py-2 rounded-lg transition-all hover:bg-indigo-50"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Dashboard
+            </button>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Event Templates
+            </h1>
+            <button
+              onClick={handleCreateTemplate}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Create Template
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10">
+        {/* Template Creation Form (conditionally rendered) */}
+        {showCreateForm && (
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all mb-8">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+              <h2 className="text-2xl font-bold text-white">
+                {editingTemplate ? "Edit Template" : "Create New Template"}
+              </h2>
+            </div>
+            
+            <form onSubmit={handleSaveTemplate} className="p-6 md:p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { name: "title", label: "Event Title", type: "text", icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
+                  { name: "description", label: "Description", type: "text", icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" },
+                  { name: "collegeName", label: "College Name", type: "text", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+                  { name: "roomnumber", label: "Room Number", type: "text", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+                  { name: "eventDate", label: "Event Date", type: "date", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+                  { name: "startTime", label: "Start Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+                  { name: "endTime", label: "End Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+                ].map((field) => (
+                  <div key={field.name} className="space-y-2">
+                    <label className="flex items-center text-sm font-medium text-gray-700">
+                      <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={field.icon} />
+                      </svg>
+                      {field.label}
+                    </label>
+                    {field.name === "description" ? (
+                      <textarea
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        required
+                        rows="3"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all hover:border-indigo-300"
+                      />
+                    ) : (
+                      <input
+                        type={field.type}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all hover:border-indigo-300"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all hover:shadow-sm font-medium flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 font-medium flex items-center justify-center group"
+                >
+                  <svg className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  {editingTemplate ? "Update Template" : "Save Template"}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          {/* Basic Event Information */}
-          <div className="form-section">
-            <h3>Event Information</h3>
-            
-            <div className="form-group">
-              <label htmlFor="title">Event Title *</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className={`form-control ${errors.title ? 'error' : ''}`}
-                placeholder="Enter event title"
-              />
-              {errors.title && <div className="error-message">{errors.title}</div>}
+        {/* Templates List */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-800">Your Seasonal Event Templates</h2>
+          
+          {templates.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+              <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No templates yet</h3>
+              <p className="mt-1 text-gray-500">Create your first seasonal event template to get started</p>
+              <button
+                onClick={handleCreateTemplate}
+                className="mt-6 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all"
+              >
+                Create Template
+              </button>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Description *</label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className={`form-control ${errors.description ? 'error' : ''}`}
-                placeholder="Enter event description"
-                rows="4"
-              ></textarea>
-              {errors.description && <div className="error-message">{errors.description}</div>}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {templates.map((template) => (
+                <div key={template.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-semibold text-gray-900">{template.title}</h3>
+                      {template.isPosted && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Posted
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-2 text-gray-600 line-clamp-2">{template.description}</p>
+                    <div className="mt-4 space-y-1 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        {template.collegeName} - {template.roomnumber}
+                      </div>
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {template.eventDate}
+                      </div>
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        {template.startTime} - {template.endTime}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 flex justify-between">
+                    <button
+                      onClick={() => handleEditTemplate(template)}
+                      className="text-indigo-600 hover:text-indigo-900 font-medium flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                      Edit
+                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleDeleteTemplate(template.id)}
+                        className="text-red-600 hover:text-red-900 font-medium flex items-center"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handlePostTemplate(template.id)}
+                        disabled={template.isPosted}
+                        className={`font-medium flex items-center ${template.isPosted ? "text-gray-400 cursor-not-allowed" : "text-green-600 hover:text-green-900"}`}
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                        Post
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+        </div>
+      </main>
 
-            <div className="form-group">
-              <label htmlFor="collegeName">College Name *</label>
-              <input
-                type="text"
-                id="collegeName"
-                name="collegeName"
-                value={formData.collegeName}
-                onChange={handleInputChange}
-                className={`form-control ${errors.collegeName ? 'error' : ''}`}
-                placeholder="Enter college name"
-              />
-              {errors.collegeName && <div className="error-message">{errors.collegeName}</div>}
-            </div>
-          </div>
-
-          {/* Venue Details */}
-          <div className="form-section">
-            <h3>Venue Details</h3>
-            
-            <div className="grid grid-2">
-              <div className="form-group">
-                <label htmlFor="venueId">Venue ID *</label>
-                <input
-                  type="text"
-                  id="venueId"
-                  name="venue.venueId"
-                  value={formData.venueDetails.venueId}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors['venue.venueId'] ? 'error' : ''}`}
-                  placeholder="Enter venue ID"
-                />
-                {errors['venue.venueId'] && <div className="error-message">{errors['venue.venueId']}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="roomName">Room Name *</label>
-                <input
-                  type="text"
-                  id="roomName"
-                  name="venue.roomName"
-                  value={formData.venueDetails.roomName}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors['venue.roomName'] ? 'error' : ''}`}
-                  placeholder="Enter room name"
-                />
-                {errors['venue.roomName'] && <div className="error-message">{errors['venue.roomName']}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="capacity">Capacity *</label>
-                <input
-                  type="number"
-                  id="capacity"
-                  name="venue.capacity"
-                  value={formData.venueDetails.capacity}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors['venue.capacity'] ? 'error' : ''}`}
-                  placeholder="Enter capacity"
-                  min="1"
-                />
-                {errors['venue.capacity'] && <div className="error-message">{errors['venue.capacity']}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="location">Location *</label>
-                <input
-                  type="text"
-                  id="location"
-                  name="venue.location"
-                  value={formData.venueDetails.location}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors['venue.location'] ? 'error' : ''}`}
-                  placeholder="Enter location"
-                />
-                {errors['venue.location'] && <div className="error-message">{errors['venue.location']}</div>}
-              </div>
-            </div>
-          </div>
-
-          {/* Date and Time */}
-          <div className="form-section">
-            <h3>Date & Time</h3>
-            
-            <div className="grid grid-3">
-              <div className="form-group">
-                <label htmlFor="eventDate">Event Date *</label>
-                <input
-                  type="date"
-                  id="eventDate"
-                  name="eventDate"
-                  value={formData.eventDate}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors.eventDate ? 'error' : ''}`}
-                />
-                {errors.eventDate && <div className="error-message">{errors.eventDate}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="startTime">Start Time *</label>
-                <input
-                  type="time"
-                  id="startTime"
-                  name="startTime"
-                  value={formData.startTime}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors.startTime ? 'error' : ''}`}
-                />
-                {errors.startTime && <div className="error-message">{errors.startTime}</div>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="endTime">End Time *</label>
-                <input
-                  type="time"
-                  id="endTime"
-                  name="endTime"
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  className={`form-control ${errors.endTime ? 'error' : ''}`}
-                />
-                {errors.endTime && <div className="error-message">{errors.endTime}</div>}
-              </div>
-            </div>
-          </div>
-
-          {/* Form Actions */}
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="btn btn-outline"
-              disabled={loading}
-            >
-              Reset Form
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner"></span>
-                  Creating...
-                </>
-              ) : (
-                'Create Event'
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+      {/* Toast Notifications */}
+      <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastClassName="rounded-lg shadow-xl"
+        bodyClassName="font-sans p-4"
+      />
     </div>
   );
-};
-
-export default CreateEvent;
+}

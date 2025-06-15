@@ -8,16 +8,8 @@ const ProfilePage = () => {
         <div className="flex justify-between items-center mb-6">
           
           <div className="flex items-center gap-4">
-            <input
-              type="text"
-              placeholder="Search"
-              className="border px-3 py-1 rounded-lg"
-            />
-            <img
-              src="https://randomuser.me/api/portraits/women/44.jpg"
-              className="w-10 h-10 rounded-full"
-              alt="User"
-            />
+          
+          
           </div>
         </div>
 
