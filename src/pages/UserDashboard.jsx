@@ -1,317 +1,6 @@
-// import { useNavigate } from "react-router-dom";
-// import { useState, useEffect } from "react";
-// import { FaSearch } from "react-icons/fa";
-
-// export default function UserDashboard() {
-//   const navigate = useNavigate();
-//   const [activeTab, setActiveTab] = useState("competitions");
-//   const [competitions, setCompetitions] = useState([]);
-//   const [events, setEvents] = useState([]);
-//   const [user, setUser] = useState(null);
-//   const [menuOpen, setMenuOpen] = useState(false);
-
-//   useEffect(() => {
-//     fetch("/api/profile", { credentials: "include" })
-//       .then(res => res.json())
-//       .then(data => setUser(data))
-//       .catch(err => console.error("Error fetching profile:", err));
-//   }, []);
-
-//   useEffect(() => {
-//     const url = activeTab === "competitions" ? "/api/competitions" : "/api/events";
-//     fetch(url)
-//       .then(res => res.json())
-//       .then(data => (activeTab === "competitions" ? setCompetitions(data) : setEvents(data)))
-//       .catch(err => console.error(`Error fetching ${activeTab}:`, err));
-//   }, [activeTab]);
-
-//   return (
-//     <div className="min-h-screen font-['Inter'] bg-gradient-to-br from-[#0C001E] via-[#1A0033] to-[#0C001E] text-white px-8 py-6">
-//       {/* Navbar */}
-//       <div className="flex justify-between items-center mb-8 border-b border-cyan-400 pb-4">
-//         <div className="flex space-x-10 text-lg font-semibold">
-//           <button onClick={() => navigate("/")} className="hover:underline">Home</button>
-//           <button
-//             onClick={() => setActiveTab("competitions")}
-//             className={`transition duration-300 ${activeTab === "competitions" ? "text-cyan-400 underline underline-offset-4" : "hover:underline"}`}
-//           >
-//             Competitions
-//           </button>
-//           <button
-//             onClick={() => setActiveTab("events")}
-//             className={`transition duration-300 ${activeTab === "events" ? "text-cyan-400 underline underline-offset-4" : "hover:underline"}`}
-//           >
-//             Events
-//           </button>
-//         </div>
-
-//         <div className="relative">
-//           <button
-//             onClick={() => setMenuOpen(!menuOpen)}
-//             className="bg-gradient-to-r from-[#2F0A50] to-[#1F002F] px-4 py-2 text-sm font-medium border border-cyan-300"
-//           >
-//             👤 <span className="text-cyan-300">{user?.name || "Loading..."}</span> ▼
-//           </button>
-//           {menuOpen && (
-//             <div className="absolute right-0 mt-2 w-44 bg-[#2F0A50] border border-cyan-300 shadow-lg z-50 text-sm">
-//               <button
-//                 onClick={() => navigate("/profile")}
-//                 className="w-full text-left px-4 py-2 hover:bg-cyan-800"
-//               >
-//                 Edit Profile
-//               </button>
-//               <button
-//                 onClick={() => (window.location.href = "/auth/logout")}
-//                 className="w-full text-left px-4 py-2 hover:bg-cyan-800"
-//               >
-//                 Sign out
-//               </button>
-//             </div>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Filters */}
-//       <div className="flex flex-wrap gap-4 items-center justify-between mb-8 bg-[#16002A]/80 p-6 border border-[#2e114d]">
-//         <div className="relative w-full max-w-lg">
-//           <input
-//             type="text"
-//             placeholder="Search..."
-//             className="w-full bg-white text-black px-5 py-2.5 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 border border-gray-300"
-//           />
-//           <FaSearch className="absolute top-3.5 left-4 text-gray-500 text-sm" /> 
-//         </div>
-
-//         <div className="flex flex-wrap gap-4 items-center text-sm">
-//           <select className="bg-transparent border border-cyan-300 px-4 py-2 text-white">
-//             <option className="bg-[#1A0033] text-white">Status</option>
-//             <option className="bg-[#1A0033] text-white">Live</option>
-//             <option className="bg-[#1A0033] text-white">Expired</option>
-//             <option className="bg-[#1A0033] text-white">Recent</option>
-//           </select>
-
-//           <select className="bg-transparent border border-cyan-300 px-4 py-2 text-white">
-//             <option className="bg-[#1A0033] text-white">Sort By</option>
-//             <option className="bg-[#1A0033] text-white">Prize</option>
-//             <option className="bg-[#1A0033] text-white">Days Left</option>
-//           </select>
-//         </div>
-//       </div>
-//       {/* Content */}
-//       <div className="space-y-6">
-//         {(activeTab === "competitions" ? competitions : events).length === 0 ? (
-//           <p className="text-lg italic tracking-wide text-center">No {activeTab} yet.</p>
-//         ) : (
-//           (activeTab === "competitions" ? competitions : events).map((item) => (
-//             <div
-//               key={item._id}
-//               className="w-full bg-[#260040] p-6 border border-cyan-400 shadow-sm text-left"
-//             >
-//           <h2 className="text-2xl font-semibold text-white mb-2">{item.title}</h2>
-
-//           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm text-cyan-200 mb-4">
-//             <p><span className="font-semibold text-white">Days Left:</span> {item.daysLeft}</p>
-//             <p><span className="font-semibold text-white">Mode:</span> {item.mode}</p>
-//             <p><span className="font-semibold text-white">Location:</span> {item.location}</p>
-//             <p><span className="font-semibold text-white">Prize:</span> {item.prize}</p>
-//             <p><span className="font-semibold text-white">Organiser:</span> {item.organiser}</p>
-//           </div>
-
-//           <div className="flex flex-wrap gap-4">
-//             <button
-//               className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 text-sm border border-green-700"
-//               onClick={() => window.open(item.link, "_blank")}
-//             >
-//               View Competition
-//             </button>
-
-//             <button
-//               className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 text-sm border border-yellow-300"
-//               onClick={() => {
-//                 fetch("/api/profile", { credentials: "include" })
-//                   .then((res) => res.json())
-//                   .then((data) => {
-//                     alert(`Confirmed by ${data.name} for "${item.title}"`);
-//                     console.log("User data:", data);
-//                   })
-//                   .catch((err) => console.error("Confirmation failed:", err));
-//               }}
-//             >
-//               Confirm
-//             </button>
-//               </div>
-//             </div>
-//           ))
-//           )}
-//         </div>
-//     </div>
-//   );
-// }
-// import { useNavigate } from "react-router-dom";
-// import { useState, useEffect } from "react";
-// import { FaSearch } from "react-icons/fa";
-
-// export default function UserDashboard() {
-//   const navigate = useNavigate();
-//   const [activeTab, setActiveTab] = useState("competitions");
-//   const [competitions, setCompetitions] = useState([]);
-//   const [events, setEvents] = useState([]);
-//   const [user, setUser] = useState(null);
-//   const [menuOpen, setMenuOpen] = useState(false);
-//   const [searchTerm, setSearchTerm] = useState("");
-
-//   useEffect(() => {
-//     fetch("/api/profile", { credentials: "include" })
-//       .then(res => res.json())
-//       .then(data => setUser(data))
-//       .catch(err => console.error("Error fetching profile:", err));
-//   }, []);
-
-//   useEffect(() => {
-//     const url = activeTab === "competitions" ? "/api/competitions" : "/api/events";
-//     fetch(url)
-//       .then(res => res.json())
-//       .then(data => (activeTab === "competitions" ? setCompetitions(data) : setEvents(data)))
-//       .catch(err => console.error(`Error fetching ${activeTab}:`, err));
-//   }, [activeTab]);
-
-//   const filteredItems = (activeTab === "competitions" ? competitions : events).filter((item) =>
-//     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     item.organiser.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     item.mode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     String(item.prize).toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   return (
-//     <div className="min-h-screen font-['Inter'] bg-gradient-to-br from-[#0C001E] via-[#1A0033] to-[#0C001E] text-white px-8 py-6">
-//       {/* Navbar */}
-//       <div className="flex justify-between items-center mb-8 border-b border-cyan-400 pb-4">
-//         <div className="flex space-x-10 text-lg font-semibold">
-//           <button onClick={() => navigate("/")} className="hover:underline">Home</button>
-//           <button
-//             onClick={() => setActiveTab("competitions")}
-//             className={`transition duration-300 ${activeTab === "competitions" ? "text-cyan-400 underline underline-offset-4" : "hover:underline"}`}
-//           >
-//             Competitions
-//           </button>
-//           <button
-//             onClick={() => setActiveTab("events")}
-//             className={`transition duration-300 ${activeTab === "events" ? "text-cyan-400 underline underline-offset-4" : "hover:underline"}`}
-//           >
-//             Events
-//           </button>
-//         </div>
-
-//         <div className="relative">
-//           <button
-//             onClick={() => setMenuOpen(!menuOpen)}
-//             className="bg-gradient-to-r from-[#2F0A50] to-[#1F002F] px-4 py-2 text-sm font-medium border border-cyan-300"
-//           >
-//             👤 <span className="text-cyan-300">{user?.name || "Loading..."}</span> ▼
-//           </button>
-//           {menuOpen && (
-//             <div className="absolute right-0 mt-2 w-44 bg-[#2F0A50] border border-cyan-300 shadow-lg z-50 text-sm">
-//               <button
-//                 onClick={() => navigate("/profile")}
-//                 className="w-full text-left px-4 py-2 hover:bg-cyan-800"
-//               >
-//                 Edit Profile
-//               </button>
-//               <button
-//                 onClick={() => (window.location.href = "/auth/logout")}
-//                 className="w-full text-left px-4 py-2 hover:bg-cyan-800"
-//               >
-//                 Sign out
-//               </button>
-//             </div>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Filters */}
-//       <div className="flex flex-wrap gap-4 items-center justify-between mb-8 bg-[#16002A]/80 p-6 border border-[#2e114d]">
-//         <div className="relative w-full max-w-lg">
-//           <input
-//             type="text"
-//             placeholder="Search..."
-//             className="w-full bg-white text-black px-5 py-2.5 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 border border-gray-300"
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//           />
-//           <FaSearch className="absolute top-3.5 left-4 text-gray-500 text-sm" />
-//         </div>
-
-//         <div className="flex flex-wrap gap-4 items-center text-sm">
-//           <select className="bg-transparent border border-cyan-300 px-4 py-2 text-white">
-//             <option className="bg-[#1A0033] text-white">Status</option>
-//             <option className="bg-[#1A0033] text-white">Live</option>
-//             <option className="bg-[#1A0033] text-white">Expired</option>
-//             <option className="bg-[#1A0033] text-white">Recent</option>
-//           </select>
-
-//           <select className="bg-transparent border border-cyan-300 px-4 py-2 text-white">
-//             <option className="bg-[#1A0033] text-white">Sort By</option>
-//             <option className="bg-[#1A0033] text-white">Prize</option>
-//             <option className="bg-[#1A0033] text-white">Days Left</option>
-//           </select>
-//         </div>
-//       </div>
-
-//       {/* Content */}
-//       <div className="space-y-6">
-//         {filteredItems.length === 0 ? (
-//           <p className="text-lg italic tracking-wide text-center">No {activeTab} yet.</p>
-//         ) : (
-//           filteredItems.map((item) => (
-//             <div
-//               key={item._id}
-//               className="w-full bg-[#260040] p-6 border border-cyan-400 shadow-sm text-left"
-//             >
-//               <h2 className="text-2xl font-semibold text-white mb-2">{item.title}</h2>
-
-//               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm text-cyan-200 mb-4">
-//                 <p><span className="font-semibold text-white">Days Left:</span> {item.daysLeft}</p>
-//                 <p><span className="font-semibold text-white">Mode:</span> {item.mode}</p>
-//                 <p><span className="font-semibold text-white">Location:</span> {item.location}</p>
-//                 <p><span className="font-semibold text-white">Prize:</span> {item.prize}</p>
-//                 <p><span className="font-semibold text-white">Organiser:</span> {item.organiser}</p>
-//               </div>
-
-//               <div className="flex flex-wrap gap-4">
-//                 <button
-//                   className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 text-sm border border-green-700"
-//                   onClick={() => window.open(item.link, "_blank")}
-//                 >
-//                   View Competition
-//                 </button>
-
-//                 <button
-//                   className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 text-sm border border-green-300"
-//                   onClick={() => {
-//                     fetch("/api/profile", { credentials: "include" })
-//                       .then((res) => res.json())
-//                       .then((data) => {
-//                         alert(`Confirmed by ${data.name} for "${item.title}"`);
-//                         console.log("User data:", data);
-//                       })
-//                       .catch((err) => console.error("Confirmation failed:", err));
-//                   }}
-//                 >
-//                   Confirm
-//                 </button>
-//               </div>
-//             </div>
-//           ))
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-// 
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -326,10 +15,12 @@ export default function UserDashboard() {
   const [visibleStatsId, setVisibleStatsId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [statsError, setStatsError] = useState(null);
 
   const confirmParticipation = async (competitionId) => {
     try {
-      const res = await fetch("/api/confirm-register", {
+      const res = await fetch("/api/competition/confirm-register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -348,22 +39,41 @@ export default function UserDashboard() {
   };
 
   const fetchStats = async (competitionId) => {
+    setLoadingStats(true);
+    setStatsError(null);
     try {
       const res = await fetch(`/api/stats/${competitionId}/participant-stats`);
-      if (!res.ok) throw new Error("Stats not found");
+      if (!res.ok) throw new Error(res.status === 404 ? "No stats available" : "Failed to fetch stats");
       const data = await res.json();
+      
+      // Check if stats are empty
+      if (Object.keys(data.department).length === 0 && Object.keys(data.batch).length === 0) {
+        throw new Error("No participation data available");
+      }
+      
       setStats(data);
       setVisibleStatsId(competitionId);
     } catch (error) {
       console.error("Error fetching stats:", error);
-      toast.error("Failed to fetch stats.");
+      setStatsError(error.message);
+      if (error.message === "No stats available" || error.message === "No participation data available") {
+        toast.info("No participation data available for this competition");
+      } else {
+        toast.error("Failed to fetch stats");
+      }
+    } finally {
+      setLoadingStats(false);
     }
   };
 
+  const closeStats = () => {
+    setVisibleStatsId(null);
+    setStats(null);
+    setStatsError(null);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user profile
         const userRes = await fetch("/api/profile/me", {
           credentials: "include",
         });
@@ -371,7 +81,6 @@ export default function UserDashboard() {
         const userData = await userRes.json();
         setUser(userData);
 
-        // Fetch competitions or events based on activeTab
         const url = activeTab === "competitions" ? "/api/competitions" : "/api/events";
         const dataRes = await fetch(url);
         if (!dataRes.ok) throw new Error(`Failed to fetch ${activeTab}`);
@@ -587,43 +296,16 @@ export default function UserDashboard() {
                           </button>
                           <button
                             onClick={() => fetchStats(item._id)}
-                            className="flex items-center px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors"
+                            disabled={loadingStats}
+                            className={`flex items-center px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors ${
+                              loadingStats ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                           >
-                            View Stats
+                            {loadingStats && visibleStatsId === item._id ? 'Loading...' : 'View Stats'}
                           </button>
                         </>
                       )}
                     </div>
-
-                    {visibleStatsId === item._id && stats && (
-                      <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h4 className="text-md font-bold text-indigo-600 mb-2">Participant Stats</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="font-semibold text-gray-700 mb-1">Department</h5>
-                            <ul className="space-y-1">
-                              {Object.entries(stats.department).map(([dept, count]) => (
-                                <li key={dept} className="flex justify-between">
-                                  <span className="text-gray-600">{dept}</span>
-                                  <span className="text-indigo-600">{count}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-gray-700 mb-1">Batch</h5>
-                            <ul className="space-y-1">
-                              {Object.entries(stats.batch).map(([batch, count]) => (
-                                <li key={batch} className="flex justify-between">
-                                  <span className="text-gray-600">{batch}</span>
-                                  <span className="text-indigo-600">{count}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -631,6 +313,77 @@ export default function UserDashboard() {
           )}
         </div>
       </main>
+
+      {/* Stats Popup */}
+ {visibleStatsId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-gray-200 p-4 sticky top-0 bg-white">
+              <h3 className="text-lg font-semibold text-gray-800">Participation Statistics</h3>
+              <button 
+                onClick={closeStats}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              {loadingStats ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : statsError ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">
+                    {statsError.includes("No data") ? "No participation data available" : "Failed to load statistics"}
+                  </p>
+                </div>
+              ) : stats ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-700 mb-3">Department-wise Participation</h4>
+                    {Object.keys(stats.department || {}).length > 0 ? (
+                      <ul className="space-y-2">
+                        {Object.entries(stats.department).map(([dept, count]) => (
+                          <li key={dept} className="flex justify-between">
+                            <span className="text-gray-600">{dept}</span>
+                            <span className="font-medium text-indigo-600">{count}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400 italic">No department data</p>
+                    )}
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-700 mb-3">Batch-wise Participation</h4>
+                    {Object.keys(stats.batch || {}).length > 0 ? (
+                      <ul className="space-y-2">
+                        {Object.entries(stats.batch).map(([batch, count]) => (
+                          <li key={batch} className="flex justify-between">
+                            <span className="text-gray-600">{batch}</span>
+                            <span className="font-medium text-indigo-600">{count}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400 italic">No batch data</p>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <div className="border-t border-gray-200 p-4 flex justify-end sticky bottom-0 bg-white">
+              <button
+                onClick={closeStats}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastContainer 
         position="top-center"
