@@ -229,4 +229,8 @@ const Input = ({ label, name, value, onChange, type = "text" }) => (
   </div>
 );
 
+<<<<<<< HEAD
 export default ProfileCard;
+=======
+export default ProfileCard;
+>>>>>>> 58d1105bacb1ccf462680e990bf4a7f132a6c9ae

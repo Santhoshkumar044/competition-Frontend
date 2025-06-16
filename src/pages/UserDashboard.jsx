@@ -1,15 +1,6 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  FaSearch,
-  FaCalendarAlt,
-  FaClock,
-  FaMapMarkerAlt,
-  FaUserTie,
-  FaTrophy,
-  FaExternalLinkAlt
-} from "react-icons/fa";
+import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -24,10 +15,12 @@ export default function UserDashboard() {
   const [visibleStatsId, setVisibleStatsId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [statsError, setStatsError] = useState(null);
 
   const confirmParticipation = async (competitionId) => {
     try {
-      const res = await fetch("/api/confirm-register", {
+      const res = await fetch("/api/competition/confirm-register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -46,18 +39,38 @@ export default function UserDashboard() {
   };
 
   const fetchStats = async (competitionId) => {
+    setLoadingStats(true);
+    setStatsError(null);
     try {
       const res = await fetch(`/api/stats/${competitionId}/participant-stats`);
-      if (!res.ok) throw new Error("Stats not found");
+      if (!res.ok) throw new Error(res.status === 404 ? "No stats available" : "Failed to fetch stats");
       const data = await res.json();
+      
+      // Check if stats are empty
+      if (Object.keys(data.department).length === 0 && Object.keys(data.batch).length === 0) {
+        throw new Error("No participation data available");
+      }
+      
       setStats(data);
       setVisibleStatsId(competitionId);
     } catch (error) {
       console.error("Error fetching stats:", error);
-      toast.error("Failed to fetch stats.");
+      setStatsError(error.message);
+      if (error.message === "No stats available" || error.message === "No participation data available") {
+        toast.info("No participation data available for this competition");
+      } else {
+        toast.error("Failed to fetch stats");
+      }
+    } finally {
+      setLoadingStats(false);
     }
   };
 
+  const closeStats = () => {
+    setVisibleStatsId(null);
+    setStats(null);
+    setStatsError(null);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -242,44 +255,25 @@ export default function UserDashboard() {
                         View
                       </button>
                       {activeTab === "competitions" && (
-                        <button
-                          onClick={() => confirmParticipation(item._id)}
-                          className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition-colors"
-                        >
-                          Confirm
-                        </button>
+                        <>
+                          <button
+                            onClick={() => confirmParticipation(item._id)}
+                            className="flex items-center px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition-colors"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => fetchStats(item._id)}
+                            disabled={loadingStats}
+                            className={`flex items-center px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors ${
+                              loadingStats ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {loadingStats && visibleStatsId === item._id ? 'Loading...' : 'View Stats'}
+                          </button>
+                        </>
                       )}
                     </div>
-
-                    {visibleStatsId === item._id && stats && (
-                      <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h4 className="text-md font-bold text-indigo-600 mb-2">Participant Stats</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="font-semibold text-gray-700 mb-1">Department</h5>
-                            <ul className="space-y-1">
-                              {Object.entries(stats.department).map(([dept, count]) => (
-                                <li key={dept} className="flex justify-between">
-                                  <span className="text-gray-600">{dept}</span>
-                                  <span className="text-indigo-600">{count}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-gray-700 mb-1">Batch</h5>
-                            <ul className="space-y-1">
-                              {Object.entries(stats.batch).map(([batch, count]) => (
-                                <li key={batch} className="flex justify-between">
-                                  <span className="text-gray-600">{batch}</span>
-                                  <span className="text-indigo-600">{count}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -288,7 +282,78 @@ export default function UserDashboard() {
         </div>
       </main>
 
-      <ToastContainer
+      {/* Stats Popup */}
+ {visibleStatsId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-gray-200 p-4 sticky top-0 bg-white">
+              <h3 className="text-lg font-semibold text-gray-800">Participation Statistics</h3>
+              <button 
+                onClick={closeStats}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              {loadingStats ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : statsError ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">
+                    {statsError.includes("No data") ? "No participation data available" : "Failed to load statistics"}
+                  </p>
+                </div>
+              ) : stats ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-700 mb-3">Department-wise Participation</h4>
+                    {Object.keys(stats.department || {}).length > 0 ? (
+                      <ul className="space-y-2">
+                        {Object.entries(stats.department).map(([dept, count]) => (
+                          <li key={dept} className="flex justify-between">
+                            <span className="text-gray-600">{dept}</span>
+                            <span className="font-medium text-indigo-600">{count}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400 italic">No department data</p>
+                    )}
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-700 mb-3">Batch-wise Participation</h4>
+                    {Object.keys(stats.batch || {}).length > 0 ? (
+                      <ul className="space-y-2">
+                        {Object.entries(stats.batch).map(([batch, count]) => (
+                          <li key={batch} className="flex justify-between">
+                            <span className="text-gray-600">{batch}</span>
+                            <span className="font-medium text-indigo-600">{count}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400 italic">No batch data</p>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <div className="border-t border-gray-200 p-4 flex justify-end sticky bottom-0 bg-white">
+              <button
+                onClick={closeStats}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer 
         position="top-center"
         autoClose={3000}
         hideProgressBar={false}
