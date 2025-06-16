@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { formatForInput } from "../components/dateUtils.jsx";
 
 export default function EditEvent() {
   const { state } = useLocation();
@@ -31,8 +32,8 @@ export default function EditEvent() {
         roomnumber: event.venueDetails?.roomnumber || "",
         location: event.venueDetails?.location || "",
         capacity: event.venueDetails?.capacity || "",
-        startTime: event.startTime || "",
-        endTime: event.endTime || "",
+        startTime: formatForInput(event.startTime),
+        endTime: formatForInput(event.endTime),
       });
       setLoading(false);
     } else {
@@ -46,8 +47,8 @@ export default function EditEvent() {
             roomnumber: data.venueDetails?.roomnumber || "",
             location: data.venueDetails?.location || "",
             capacity: data.venueDetails?.capacity || "",
-            startTime: data.startTime || "",
-            endTime: data.endTime || "",
+            startTime: formatForInput(data.startTime),
+            endTime: formatForInput(data.endTime),
           });
           setLoading(false);
         })
@@ -66,16 +67,17 @@ export default function EditEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Convert input strings back to proper Date objects
     const payload = {
       title: formData.title,
       description: formData.description,
       collegeName: formData.collegeName,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
+      startTime: new Date(formData.startTime).toISOString(),
+      endTime: new Date(formData.endTime).toISOString(),
       venueDetails: {
         roomnumber: formData.roomnumber,
         location: formData.location,
-        capacity: formData.capacity,
+        capacity: parseInt(formData.capacity),
       },
     };
 
@@ -148,7 +150,7 @@ export default function EditEvent() {
                 { name: "collegeName", label: "College Name", type: "text", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
                 { name: "roomnumber", label: "Room Number", type: "text", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
                 { name: "location", label: "Location", type: "text", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" },
-                { name: "capacity", label: "Capacity", type: "text", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+                { name: "capacity", label: "Capacity", type: "number", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
                 { name: "startTime", label: "Start Time", type: "datetime-local", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
                 { name: "endTime", label: "End Time", type: "datetime-local", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
               ].map((field) => (
@@ -165,6 +167,7 @@ export default function EditEvent() {
                     value={formData[field.name]}
                     onChange={handleChange}
                     required
+                    min={field.name === "endTime" ? formData.startTime : undefined}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all hover:border-indigo-300"
                   />
                 </div>

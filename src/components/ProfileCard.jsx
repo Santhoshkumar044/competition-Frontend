@@ -89,7 +89,16 @@ const ProfileCard = () => {
       const result = await response.json();
 
       if (response.ok) {
+<<<<<<< HEAD
         toast.success("🎉 Profile updated successfully!", { theme: 'dark' });
+=======
+        toast.success("🎉 Profile saved successfully!", { theme: 'dark' });
+
+        // Redirect to dashboard after delay
+        setTimeout(() => {
+          navigate("/user");
+        }, 1500);
+>>>>>>> da0e6a51ea380513ed36ab3296e0641e4b87d876
       } else {
         throw new Error(result.error || "Failed to save profile.");
       }
@@ -199,7 +208,10 @@ const ProfileCard = () => {
   );
 };
 
+<<<<<<< HEAD
 // Reusable input component
+=======
+>>>>>>> da0e6a51ea380513ed36ab3296e0641e4b87d876
 const Input = ({ label, name, value, onChange, type = "text" }) => (
   <div>
     <label className="block text-sm mb-1 font-medium">{label}</label>
@@ -214,4 +226,8 @@ const Input = ({ label, name, value, onChange, type = "text" }) => (
   </div>
 );
 
+<<<<<<< HEAD
 export default ProfileCard;
+=======
+export default ProfileCard;
+>>>>>>> da0e6a51ea380513ed36ab3296e0641e4b87d876
