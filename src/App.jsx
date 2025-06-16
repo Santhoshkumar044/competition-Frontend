@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import HomePage from "./pages/HomePage";
 // import H from "./pages/H";
@@ -35,7 +33,6 @@
 //   );
 // }
 
->>>>>>> da0e6a51ea380513ed36ab3296e0641e4b87d876
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
@@ -51,12 +48,7 @@ import EditCompetition from "./pages/EditCompetition";
 import EditEvent from "./pages/EditEvent";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
-<<<<<<< HEAD
 import TemplatePage from "./pages/Template";
-=======
-import EventManagementApp from "./pages/Template";
-
->>>>>>> da0e6a51ea380513ed36ab3296e0641e4b87d876
 export default function App() {
   return (
     <Router>
