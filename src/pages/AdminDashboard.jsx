@@ -1,3 +1,123 @@
+
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { FaSearch } from "react-icons/fa";
+
+// export default function HostDashboard() {
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState("competitions");
+
+//   return (
+//     <div className="min-h-screen bg-[#F5F7FA] text-[#1E1E1E] font-sans">
+//       {/* 🌸 Subtle Background Decorations */}
+//       <div className="absolute w-[300px] h-[300px] bg-[#E3DFFF] rounded-full blur-[160px] opacity-40 top-[-50px] left-[-100px] z-0" />
+//       <div className="absolute w-[200px] h-[200px] bg-[#F7C59F] rounded-full blur-[140px] opacity-30 bottom-[-50px] right-[-60px] z-0" />
+
+//       {/* 🚀 Navbar */}
+//       <nav className="px-6 py-5 flex justify-between items-center relative z-10">
+//         <h1 className="text-3xl font-bold text-[#4B3F72] tracking-wide">Host Dashboard</h1>
+//         <button
+//           onClick={() => navigate("/H")}
+//           className="bg-[#EF767A] text-white px-5 py-2 rounded-full shadow-md hover:bg-[#d55560] transition-all"
+//         >
+//           Home
+//         </button>
+//       </nav>
+
+//       {/* 🔍 Search Box */}
+//       <div className="flex justify-center mt-10 z-10 relative">
+//         <div className="flex items-center bg-white text-[#1E1E1E] px-4 py-3 rounded-xl shadow-xl border border-[#E3DFFF] w-[90%] md:w-[50%]">
+//           <FaSearch className="text-[#4B3F72] mr-3" />
+//           <input
+//             type="text"
+//             placeholder="Search for competitions or events..."
+//             className="bg-transparent w-full outline-none placeholder-gray-500"
+//           />
+//         </div>
+//       </div>
+
+//       {/* 🧭 Tabs */}
+//       <div className="flex justify-center gap-6 mt-8 z-10 relative">
+//         {["competitions", "events"].map((tab) => (
+//           <button
+//             key={tab}
+//             onClick={() => setActiveTab(tab)}
+//             className={`text-sm px-6 py-2 rounded-full font-semibold transition-all duration-300 
+//               ${
+//                 activeTab === tab
+//                   ? "bg-[#4B3F72] text-white shadow-lg"
+//                   : "bg-white text-[#4B3F72] border border-[#4B3F72] hover:bg-[#f0ebf5]"
+//               }`}
+//           >
+//             {tab.charAt(0).toUpperCase() + tab.slice(1)}
+//           </button>
+//         ))}
+//       </div>
+
+//       {/* 📦 Content Area */}
+//       <div className="mt-10 px-4 md:px-20 z-10 relative">
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {/* 💼 Dummy Cards */}
+//           {[1, 2, 3].map((item) => (
+//             <div
+//               key={item}
+//               className="bg-white rounded-xl shadow-md p-5 border border-[#E3DFFF] hover:shadow-lg transition-all"
+//             >
+//               <h2 className="text-lg font-bold text-[#4B3F72] mb-2">Event Title {item}</h2>
+//               <p className="text-sm text-[#1E1E1E]">Some description about this competition or event goes here. Keep it short and clean.</p>
+//               <button className="mt-4 bg-[#EF767A] text-white px-4 py-2 rounded-full hover:bg-[#d55560] transition-all">
+//                 View Details
+//               </button>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+// import React from "react";
+// import { FaFeatherAlt, FaHatWizard, FaSkullCrossbones } from "react-icons/fa";
+
+// export default function FantasyDashboard() {
+//   return (
+//     <div className="min-h-screen bg-[#1b1a17] text-[#fefae0] font-serif px-8 py-10">
+//       <header className="flex justify-between items-center mb-12 border-b border-[#3d3c36] pb-6">
+//         <h1 className="text-4xl font-extrabold tracking-wide text-[#d4af37] drop-shadow-[0_0_5px_#d4af37]">
+//           🧭 Grandmaster's Console
+//         </h1>
+//         <button className="bg-[#d4af37] hover:bg-[#bfa133] text-black px-6 py-2 rounded shadow-md font-bold tracking-wide transition">
+//           + Add Spell / Quest
+//         </button>
+//       </header>
+
+//       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+//         <Card
+//           icon={<FaHatWizard className="text-[#d4af37] text-3xl" />}
+//           title="Arcane Events"
+//           desc="Schedule duels, magic lessons, and feasts."
+//         />
+//         <Card
+//           icon={<FaSkullCrossbones className="text-[#8b0000] text-3xl" />}
+//           title="Sea Quests"
+//           desc="Track bounty hunts, voyages, and ship raids."
+//         />
+//       </section>
+//     </div>
+//   );
+// }
+
+// function Card({ icon, title, desc }) {
+//   return (
+//     <div className="bg-[#2c2a24] border border-[#3f3d35] rounded-xl p-6 shadow-[0_0_12px_rgba(212,175,55,0.1)] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] transition-all duration-300 hover:-translate-y-1">
+//       <div className="mb-4">{icon}</div>
+//       <h3 className="text-2xl font-bold text-[#fefae0]">{title}</h3>
+//       <p className="text-[#d6d3c2] mt-2">{desc}</p>
+//       <button className="mt-6 inline-block border border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-black px-4 py-2 rounded-md text-sm font-medium transition">
+//         Enter
+//       </button>
+//     </div>
+//   );
+// // }
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch, FaEdit, FaTrash, FaExternalLinkAlt } from "react-icons/fa";
