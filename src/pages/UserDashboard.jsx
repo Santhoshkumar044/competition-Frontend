@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
@@ -17,6 +18,52 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsError, setStatsError] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [showEventConfirm, setShowEventConfirm] = useState(false);
+  const [registering, setRegistering] = useState(false);
+
+  const handleRegisterEvent = (eventId) => {
+    setSelectedEventId(eventId);
+    setShowEventConfirm(true);
+  };
+
+  const confirmEventRegistration = async () => {
+    setRegistering(true);
+    try {
+      const res = await fetch("/api/events/confirm-register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ eventId: selectedEventId })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success("Successfully registered for the event! 🎉");
+        // Refresh events list after successful registration
+        const eventsRes = await fetch("/api/events");
+        if (eventsRes.ok) {
+          const updatedEvents = await eventsRes.json();
+          setEvents(updatedEvents);
+        }
+      } else {
+        toast.error(`Error: ${data.error || "Failed to register"}`);
+      }
+    } catch (err) {
+      console.error("Registration failed:", err);
+      toast.error("Something went wrong while registering.");
+    } finally {
+      setRegistering(false);
+      setShowEventConfirm(false);
+      setSelectedEventId(null);
+    }
+  };
+
+  const cancelEventRegistration = () => {
+    setShowEventConfirm(false);
+    setSelectedEventId(null);
+  };
 
   const confirmParticipation = async (competitionId) => {
     try {
@@ -46,7 +93,6 @@ export default function UserDashboard() {
       if (!res.ok) throw new Error(res.status === 404 ? "No stats available" : "Failed to fetch stats");
       const data = await res.json();
       
-      // Check if stats are empty
       if (Object.keys(data.department).length === 0 && Object.keys(data.batch).length === 0) {
         throw new Error("No participation data available");
       }
@@ -71,6 +117,7 @@ export default function UserDashboard() {
     setStats(null);
     setStatsError(null);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -247,13 +294,24 @@ export default function UserDashboard() {
                     </div>
 
                     <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                      <button
-                        onClick={() => window.open(item.link, "_blank")}
-                        className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
-                      >
-                        <FaExternalLinkAlt className="mr-2" />
-                        View
-                      </button>
+                      {activeTab === "events" ? (
+                        <button
+                          onClick={() => handleRegisterEvent(item._id)}
+                          className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                        >
+                          <FaExternalLinkAlt className="mr-2" />
+                          Register Now
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => window.open(item.link, "_blank")}
+                          className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+                        >
+                          <FaExternalLinkAlt className="mr-2" />
+                          View
+                        </button>
+                      )}
+
                       {activeTab === "competitions" && (
                         <>
                           <button
@@ -283,7 +341,7 @@ export default function UserDashboard() {
       </main>
 
       {/* Stats Popup */}
- {visibleStatsId && (
+      {visibleStatsId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-gray-200 p-4 sticky top-0 bg-white">
@@ -347,6 +405,44 @@ export default function UserDashboard() {
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Event Registration Confirmation Dialog */}
+      {showEventConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Registration
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to register for this event?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={cancelEventRegistration}
+                disabled={registering}
+                className={`px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                No
+              </button>
+              <button
+                onClick={confirmEventRegistration}
+                disabled={registering}
+                className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {registering ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Registering...
+                  </>
+                ) : 'Yes'}
               </button>
             </div>
           </div>
