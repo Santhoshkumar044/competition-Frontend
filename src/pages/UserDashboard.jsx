@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion, AnimatePresence } from "framer-motion";
+const _motion = motion;
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -157,183 +159,338 @@ export default function UserDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-indigo-600 text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]">
+        <div className="text-[#4B3F72] text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans antialiased">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-[#F5F7FA] text-[#1E1E1E] font-sans">
+      {/* 🌸 Subtle Background Decorations */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.4 }}
+        transition={{ duration: 1 }}
+        className="fixed w-[300px] h-[300px] bg-[#E3DFFF] rounded-full blur-[160px] top-[-50px] left-[-100px] z-0" 
+      />
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.3 }}
+        transition={{ duration: 1, delay: 0.3 }}
+        className="fixed w-[200px] h-[200px] bg-[#F7C59F] rounded-full blur-[140px] bottom-[-50px] right-[-60px] z-0"
+      />
+
+      <motion.header 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="bg-[#dcd8f1] shadow-sm relative z-10"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-between items-center h-16">
             <div className="flex space-x-4 sm:space-x-8">
-              <button onClick={() => navigate("/")} className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate("/")}
+                className="text-gray-700 hover:text-[#4B3F72] px-3 py-2 text-sm font-medium transition-colors"
+              >
                 Home
-              </button>
-              <button onClick={() => setActiveTab("competitions")} className={`${activeTab === "competitions" ? "text-indigo-600 border-b-2 border-indigo-600" : "text-gray-500 hover:text-gray-700"} px-3 py-2 text-sm font-medium transition-colors`}>
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab("competitions")}
+                className={`${activeTab === "competitions" ? "text-[#4B3F72] border-b-2 border-[#4B3F72]" : "text-gray-500 hover:text-gray-700"} px-3 py-2 text-sm font-medium transition-colors relative group`}
+              >
                 Competitions
-              </button>
-              <button onClick={() => setActiveTab("events")} className={`${activeTab === "events" ? "text-indigo-600 border-b-2 border-indigo-600" : "text-gray-500 hover:text-gray-700"} px-3 py-2 text-sm font-medium transition-colors`}>
+                {activeTab === "competitions" && (
+                  <motion.span 
+                    layoutId="tabIndicator"
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-[#4B3F72]"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab("events")}
+                className={`${activeTab === "events" ? "text-[#4B3F72] border-b-2 border-[#4B3F72]" : "text-gray-500 hover:text-gray-700"} px-3 py-2 text-sm font-medium transition-colors relative group`}
+              >
                 Events
-              </button>
+                {activeTab === "events" && (
+                  <motion.span 
+                    layoutId="tabIndicator"
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-[#4B3F72]"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </motion.button>
             </div>
             <div className="relative mt-2 sm:mt-0">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center space-x-2 text-gray-700 hover:text-[#4B3F72] transition-colors"
+              >
+                <motion.div 
+                  whileHover={{ rotate: 10 }}
+                  className="w-8 h-8 rounded-full bg-[#E3DFFF] flex items-center justify-center text-[#4B3F72] font-medium shadow-sm"
+                >
                   {user?.fullName?.charAt(0) || "U"}
-                </div>
+                </motion.div>
                 <span className="hidden md:inline-block">{user?.fullName || "User"}</span>
-                <svg className={`w-4 h-4 transition-transform ${menuOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <motion.svg 
+                  animate={{ rotate: menuOpen ? 180 : 0 }}
+                  className="w-4 h-4 transition-transform"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
-                  <button onClick={() => navigate("/profile")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                    Edit Profile
-                  </button>
-                  <button onClick={() => (window.location.href = "/auth/logout")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                    Sign out
-                  </button>
-                </div>
-              )}
+                </motion.svg>
+              </motion.button>
+              
+              <AnimatePresence>
+                {menuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 overflow-hidden"
+                  >
+                    <motion.button 
+                      whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
+                      onClick={() => navigate("/profile")}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-2 text-[#3e3e65]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                      </svg>
+                      Edit Profile
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
+                      onClick={() => (window.location.href = "/auth/logout")}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-2 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                      </svg>
+                      Sign out
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8">
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8 relative z-0">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-xl shadow p-6 mb-8 border border-[#E3DFFF]"
+        >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative flex-grow max-w-2xl">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="text-gray-400" />
+                <FaSearch className="text-[#4B3F72]" />
               </div>
-              <input
+              <motion.input
+                whileFocus={{ scale: 1.005, boxShadow: "0 0 0 2px rgba(75, 63, 114, 0.2)" }}
                 type="text"
                 placeholder={`Search ${activeTab} by title, location, organiser...`}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all"
+                className="block w-full pl-10 pr-3 py-3 border border-[#E3DFFF] rounded-lg bg-[#F5F7FA] focus:ring-2 focus:ring-[#4B3F72] focus:border-[#4B3F72] text-gray-900 placeholder-gray-400 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-2">
-            {activeTab === "competitions" ? "Available Competitions" : "Upcoming Events"}
-          </h1>
-          <p className="text-gray-500 mb-6">
-            {activeTab === "competitions" ? "Browse and participate in coding competitions" : "Discover and join upcoming events"}
-          </p>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <div>
+              <h1 className="text-2xl font-semibold text-[#4B3F72] mb-1">
+                {activeTab === "competitions" ? "Available Competitions" : "Upcoming Events"}
+              </h1>
+              <p className="text-gray-500">
+                {activeTab === "competitions" ? "Browse and participate in coding competitions" : "Discover and join upcoming events"}
+              </p>
+            </div>
+            <div className="text-sm text-[#4B3F72] bg-[#E3DFFF] bg-opacity-30 px-3 py-1 rounded-full">
+              {filteredItems.length} {filteredItems.length === 1 ? activeTab.slice(0, -1) : activeTab}
+            </div>
+          </motion.div>
 
           {filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <p className="text-lg font-light text-gray-400 italic">No {activeTab} found matching your search</p>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center justify-center py-12"
+            >
+              <div className="bg-[#E3DFFF] bg-opacity-20 p-8 rounded-full mb-6">
+                <svg className="text-[#4B3F72] text-4xl opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <p className="text-lg font-light text-gray-500 mb-6">No {activeTab} found matching your search</p>
+            </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.map((item) => (
-                <div
+                <motion.div
                   key={item._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                  className="bg-white rounded-xl shadow-md p-5 border border-[#E3DFFF] hover:shadow-lg transition-all relative overflow-hidden"
                 >
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
-                      <span className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">
-                        {item.mode || (activeTab === "events" ? "Event" : "Competition")}
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 text-sm text-gray-600 mb-6">
-                      {activeTab === "events" ? (
-                        <>
-                          <div className="flex items-center">
-                            <FaMapMarkerAlt className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>{item.venueDetails?.location || "N/A"}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaCalendarAlt className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>Date: {item.eventDate ? new Date(item.eventDate).toLocaleDateString() : "N/A"}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaClock className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>Time: {item.eventTime || "N/A"}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaUserTie className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>College: {item.collegeName || "N/A"}</span>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center">
-                            <FaMapMarkerAlt className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>{item.location}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaUserTie className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>Organized by: {item.organiser}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaCalendarAlt className="w-4 h-4 mr-2 text-indigo-500" />
-                            <span>{item.daysLeft} days remaining</span>
-                          </div>
-                          {item.prize && (
-                            <div className="flex items-center">
-                              <FaTrophy className="w-4 h-4 mr-2 text-indigo-500" />
-                              <span>Prize: {item.prize}</span>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                      {activeTab === "events" ? (
-                        <button
-                          onClick={() => handleRegisterEvent(item._id)}
-                          className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
-                        >
-                          <FaExternalLinkAlt className="mr-2" />
-                          Register Now
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => window.open(item.link, "_blank")}
-                          className="flex items-center w-full sm:w-auto justify-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
-                        >
-                          <FaExternalLinkAlt className="mr-2" />
-                          View
-                        </button>
-                      )}
-
-                      {activeTab === "competitions" && (
-                        <>
-                          <button
-                            onClick={() => confirmParticipation(item._id)}
-                            className="flex items-center px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition-colors"
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => fetchStats(item._id)}
-                            disabled={loadingStats}
-                            className={`flex items-center px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors ${
-                              loadingStats ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                          >
-                            {loadingStats && visibleStatsId === item._id ? 'Loading...' : 'View Stats'}
-                          </button>
-                        </>
-                      )}
-                    </div>
+                  {/* Decorative accent */}
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B3F72] to-[#3A315A]"></div>
+                  
+                  <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-lg font-bold text-[#4B3F72]">{item.title}</h2>
+                    <motion.span 
+                      whileHover={{ scale: 1.1 }}
+                      className="px-2 py-1 text-xs font-medium bg-[#E3DFFF] text-[#4B3F72] rounded-full"
+                    >
+                      {item.mode || (activeTab === "events" ? "Event" : "Competition")}
+                    </motion.span>
                   </div>
-                </div>
+
+                  <div className="space-y-3 text-sm text-gray-600 mb-6">
+                    {activeTab === "events" ? (
+                      <>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaMapMarkerAlt className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>{item.venueDetails?.location || "N/A"}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaCalendarAlt className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>Date: {item.eventDate ? new Date(item.eventDate).toLocaleDateString() : "N/A"}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaClock className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>Time: {item.eventTime || "N/A"}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaUserTie className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>College: {item.collegeName || "N/A"}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaMapMarkerAlt className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>{item.location}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaUserTie className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>Organized by: {item.organiser}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaCalendarAlt className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>{item.daysLeft} days remaining</span>
+                        </div>
+                        {item.prize && (
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                              <FaTrophy className="w-4 h-4 text-[#4B3F72]" />
+                            </div>
+                            <span>Prize: {item.prize}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {activeTab === "events" ? (
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleRegisterEvent(item._id)}
+                        className="flex items-center px-4 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
+                      >
+                        <FaExternalLinkAlt className="mr-2" />
+                        Register Now
+                      </motion.button>
+                    ) : (
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => window.open(item.link, "_blank")}
+                        className="flex items-center px-4 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
+                      >
+                        <FaExternalLinkAlt className="mr-2" />
+                        View
+                      </motion.button>
+                    )}
+
+                    {activeTab === "competitions" && (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.05, backgroundColor: "#f8e3a0" }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => confirmParticipation(item._id)}
+                          className="flex items-center px-4 py-2 bg-[#FFF4E0] text-[#D4A017] rounded-lg hover:bg-[#f8e3a0] transition-colors"
+                        >
+                          Confirm
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05, backgroundColor: "#f8d5d6" }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => fetchStats(item._id)}
+                          disabled={loadingStats}
+                          className={`flex items-center px-4 py-2 bg-[#FFE5E6] text-[#EF767A] rounded-lg hover:bg-[#f8d5d6] transition-colors ${
+                            loadingStats && visibleStatsId === item._id ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        >
+                          {loadingStats && visibleStatsId === item._id ? (
+                            <span className="flex items-center">
+                              <motion.span
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                className="inline-block"
+                              >
+                                ⏳
+                              </motion.span>
+                            </span>
+                          ) : 'View Stats'}
+                        </motion.button>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
               ))}
             </div>
           )}
@@ -341,113 +498,181 @@ export default function UserDashboard() {
       </main>
 
       {/* Stats Popup */}
-      {visibleStatsId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-gray-200 p-4 sticky top-0 bg-white">
-              <h3 className="text-lg font-semibold text-gray-800">Participation Statistics</h3>
-              <button 
-                onClick={closeStats}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <FaTimes className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6">
-              {loadingStats ? (
-                <div className="flex justify-center items-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-                </div>
-              ) : statsError ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">
-                    {statsError.includes("No data") ? "No participation data available" : "Failed to load statistics"}
-                  </p>
-                </div>
-              ) : stats ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-700 mb-3">Department-wise Participation</h4>
-                    {Object.keys(stats.department || {}).length > 0 ? (
-                      <ul className="space-y-2">
-                        {Object.entries(stats.department).map(([dept, count]) => (
-                          <li key={dept} className="flex justify-between">
-                            <span className="text-gray-600">{dept}</span>
-                            <span className="font-medium text-indigo-600">{count}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-400 italic">No department data</p>
-                    )}
+      <AnimatePresence>
+        {visibleStatsId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex justify-between items-center border-b border-gray-200 p-4 sticky top-0 bg-white">
+                <h3 className="text-lg font-semibold text-[#4B3F72]">Participation Statistics</h3>
+                <motion.button 
+                  whileHover={{ rotate: 90, backgroundColor: "#E3DFFF" }}
+                  onClick={closeStats}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-500"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </motion.button>
+              </div>
+              <div className="p-6">
+                {loadingStats ? (
+                  <motion.div 
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="flex justify-center items-center py-12"
+                  >
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#4B3F72]"></div>
+                  </motion.div>
+                ) : statsError ? (
+                  <div className="text-center py-8">
+                    <div className="bg-[#FFE5E6] inline-flex p-4 rounded-full mb-4">
+                      <FaChartBar className="text-[#EF767A] text-2xl" />
+                    </div>
+                    <p className="text-gray-500">
+                      {statsError.includes("No data") ? "No participation data available" : "Failed to load statistics"}
+                    </p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-700 mb-3">Batch-wise Participation</h4>
-                    {Object.keys(stats.batch || {}).length > 0 ? (
-                      <ul className="space-y-2">
-                        {Object.entries(stats.batch).map(([batch, count]) => (
-                          <li key={batch} className="flex justify-between">
-                            <span className="text-gray-600">{batch}</span>
-                            <span className="font-medium text-indigo-600">{count}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-400 italic">No batch data</p>
-                    )}
+                ) : stats ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <motion.div
+                      whileHover={{ y: -5 }}
+                      className="bg-[#F5F7FA] p-4 rounded-lg border border-[#E3DFFF]"
+                    >
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full bg-[#E3DFFF] flex items-center justify-center mr-3">
+                          <svg className="w-5 h-5 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                          </svg>
+                        </div>
+                        <h4 className="font-medium text-[#4B3F72]">Department-wise</h4>
+                      </div>
+                      {Object.keys(stats.department || {}).length > 0 ? (
+                        <ul className="space-y-2">
+                          {Object.entries(stats.department).map(([dept, count]) => (
+                            <motion.li 
+                              key={dept} 
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              className="flex justify-between items-center py-2 px-3 bg-white rounded-lg shadow-sm"
+                            >
+                              <span className="text-gray-600">{dept}</span>
+                              <span className="font-medium text-[#4B3F72] bg-[#E3DFFF] px-2 py-1 rounded-full text-xs">{count}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-400 italic text-center py-4">No department data</p>
+                      )}
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ y: -5 }}
+                      className="bg-[#F5F7FA] p-4 rounded-lg border border-[#E3DFFF]"
+                    >
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full bg-[#E3DFFF] flex items-center justify-center mr-3">
+                          <svg className="w-5 h-5 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                          </svg>
+                        </div>
+                        <h4 className="font-medium text-[#4B3F72]">Batch-wise</h4>
+                      </div>
+                      {Object.keys(stats.batch || {}).length > 0 ? (
+                        <ul className="space-y-2">
+                          {Object.entries(stats.batch).map(([batch, count]) => (
+                            <motion.li 
+                              key={batch} 
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              className="flex justify-between items-center py-2 px-3 bg-white rounded-lg shadow-sm"
+                            >
+                              <span className="text-gray-600">{batch}</span>
+                              <span className="font-medium text-[#4B3F72] bg-[#E3DFFF] px-2 py-1 rounded-full text-xs">{count}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-400 italic text-center py-4">No batch data</p>
+                      )}
+                    </motion.div>
                   </div>
-                </div>
-              ) : null}
-            </div>
-            <div className="border-t border-gray-200 p-4 flex justify-end sticky bottom-0 bg-white">
-              <button
-                onClick={closeStats}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                ) : null}
+              </div>
+              <div className="border-t border-gray-200 p-4 flex justify-end sticky bottom-0 bg-white">
+                <motion.button
+                  whileHover={{ scale: 1.03, backgroundColor: "#3A315A" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={closeStats}
+                  className="px-4 py-2 bg-[#4B3F72] text-white rounded-lg hover:bg-[#3A315A] transition-colors"
+                >
+                  Close
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Event Registration Confirmation Dialog */}
-      {showEventConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Confirm Registration
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to register for this event?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={cancelEventRegistration}
-                disabled={registering}
-                className={`px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                No
-              </button>
-              <button
-                onClick={confirmEventRegistration}
-                disabled={registering}
-                className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {registering ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Registering...
-                  </>
-                ) : 'Yes'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showEventConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+            >
+              <h3 className="text-lg font-semibold text-[#4B3F72] mb-4">
+                Confirm Registration
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to register for this event?
+              </p>
+              <div className="flex justify-end gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.03, backgroundColor: "#E3DFFF" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={cancelEventRegistration}
+                  disabled={registering}
+                  className={`px-4 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  No
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.03, backgroundColor: "#3A315A" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={confirmEventRegistration}
+                  disabled={registering}
+                  className={`px-4 py-2 bg-[#4B3F72] text-white rounded-lg hover:bg-[#3A315A] transition flex items-center justify-center ${registering ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {registering ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Registering...
+                    </>
+                  ) : 'Yes'}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ToastContainer 
         position="top-center"

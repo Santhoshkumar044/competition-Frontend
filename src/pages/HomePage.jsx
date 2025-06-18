@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Typewriter from "../components/Typewriter";
@@ -60,4 +59,3 @@ export default function HomePage() {
     </div>
   );
 }
-
