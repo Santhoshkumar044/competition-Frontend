@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 
+
 const _maotion = motion;
 // Add this new component at the top of your file
 const BubbleBackground = () => {

@@ -2,25 +2,26 @@ import { useEffect, useState } from "react";
 
 export default function Typewriter({ text = "", speed = 100 }) {
   const [displayed, setDisplayed] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (!text || typeof text !== "string") return;
 
-    let i = 0;
-    setDisplayed(""); // reset when text changes
+    // Reset when text changes
+    setDisplayed("");
+    setCurrentIndex(0);
+  }, [text]);
 
-    const interval = setInterval(() => {
-      setDisplayed((prev) => {
-        const nextChar = text.charAt(i);
-        console.log("Typing:", nextChar); // Debug line
-        return prev + nextChar;
-      });
-      i++;
-      if (i >= text.length) clearInterval(interval);
+  useEffect(() => {
+    if (currentIndex >= text.length) return;
+
+    const timeout = setTimeout(() => {
+      setDisplayed(prev => prev + text.charAt(currentIndex));
+      setCurrentIndex(prev => prev + 1);
     }, speed);
 
-    return () => clearInterval(interval);
-  }, [text, speed]);
+    return () => clearTimeout(timeout);
+  }, [currentIndex, text, speed]);
 
   return (
     <h1 className="text-white text-4xl md:text-6xl font-bold">
