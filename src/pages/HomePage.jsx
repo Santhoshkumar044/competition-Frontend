@@ -59,3 +59,17 @@ export default function HomePage() {
     </div>
   );
 }
+// import React from 'react';
+// import ThreeDMonitor from './ThreeDMonitor'; // adjust path as needed
+
+// export default function Homepage() {
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#1f1f1f] text-white flex flex-col items-center justify-center px-4">
+//       <h1 className="text-4xl font-bold mb-6">Enter the Arena</h1>
+//       <div className="w-[400px] h-[400px]">
+//         <ThreeDMonitor />
+//       </div>
+//       <p className="mt-4 text-gray-400 text-sm tracking-wide">Gaming mode: ON 🎮</p>
+//     </div>
+//   );
+// }

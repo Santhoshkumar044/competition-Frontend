@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import FloatingCampusModel from "../components/FloatingCampusModel";
 
 console.log(motion);
 console.log(toast);
@@ -233,11 +234,11 @@ export default function H() {
           >
             <div className="absolute -top-8 -left-8 w-64 h-64 bg-[#4B3F72] bg-opacity-10 rounded-full filter blur-3xl"></div>
             <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-[#F7C59F] bg-opacity-20 rounded-full filter blur-3xl"></div>
-            <img 
+            {/* <img 
               src="/src/assets/img.jpg" 
               alt="Students Illustration" 
               className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-2xl border-4 border-white"
-            />
+            /> */}
           </motion.div>
         </div>
       </section>
@@ -306,9 +307,10 @@ export default function H() {
               </div>
               <div className="relative h-64 md:h-80">
                 <div className="absolute inset-0 bg-[#4B3F72] bg-opacity-10 rounded-2xl filter blur-xl"></div>
-                <div className="relative z-10 w-full h-full bg-[#4B3F72] bg-opacity-5 rounded-2xl overflow-hidden border border-[#E3DFFF] flex items-center justify-center">
-                  <span className="text-[#4B3F72] text-opacity-50 font-bold">CIT Campus Image</span>
+                <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden border border-[#E3DFFF] bg-white shadow-lg">
+                   <FloatingCampusModel />
                 </div>
+
               </div>
             </div>
           </motion.div>
