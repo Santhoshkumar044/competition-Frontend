@@ -115,12 +115,6 @@ const ProfileCard = () => {
           >
             Home
           </button>
-          <button
-            onClick={() => navigate("/user")}
-            className="bg-[#1e1e4d] hover:bg-[#42c3d9] text-white px-3 py-1 sm:px-4 sm:py-2 md:px-5 md:py-2 transition-all text-sm sm:text-base"
-          >
-            ← Back to Dashboard
-          </button>
         </div>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mt-2 sm:mt-0">Edit Profile</h1>
       </div>
