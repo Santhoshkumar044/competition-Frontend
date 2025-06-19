@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
@@ -12,6 +11,7 @@ export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState("competitions");
   const [competitions, setCompetitions] = useState([]);
   const [events, setEvents] = useState([]);
+  const [recommendedCompetitions, setRecommendedCompetitions] = useState([]);
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [stats, setStats] = useState(null);
@@ -43,7 +43,6 @@ export default function UserDashboard() {
       
       if (res.ok) {
         toast.success("Successfully registered for the event! 🎉");
-        // Refresh events list after successful registration
         const eventsRes = await fetch("/api/events");
         if (eventsRes.ok) {
           const updatedEvents = await eventsRes.json();
@@ -60,11 +59,6 @@ export default function UserDashboard() {
       setShowEventConfirm(false);
       setSelectedEventId(null);
     }
-  };
-
-  const cancelEventRegistration = () => {
-    setShowEventConfirm(false);
-    setSelectedEventId(null);
   };
 
   const confirmParticipation = async (competitionId) => {
@@ -113,11 +107,25 @@ export default function UserDashboard() {
       setLoadingStats(false);
     }
   };
-
+  const cancelEventRegistration = () => {
+     setShowEventConfirm(false); 
+     setSelectedEventId(null);
+   };
   const closeStats = () => {
     setVisibleStatsId(null);
     setStats(null);
     setStatsError(null);
+  };
+
+  const fetchRecommendedCompetitions = async (userId) => {
+    try {
+      const res = await fetch(`/api/recommend/${userId}`);
+      if (!res.ok) throw new Error("Failed to fetch recommendations");
+      const data = await res.json();
+      setRecommendedCompetitions(data.data);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    }
   };
 
   useEffect(() => {
@@ -129,6 +137,10 @@ export default function UserDashboard() {
         if (!userRes.ok) throw new Error("Failed to fetch user profile");
         const userData = await userRes.json();
         setUser(userData);
+        
+        if (userData?._id) {
+          await fetchRecommendedCompetitions(userData._id);
+        }
 
         const url = activeTab === "competitions" ? "/api/competitions" : "/api/events";
         const dataRes = await fetch(url);
@@ -167,7 +179,6 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] text-[#1E1E1E] font-sans">
-      {/* 🌸 Subtle Background Decorations */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.4 }}
@@ -316,6 +327,111 @@ export default function UserDashboard() {
         </motion.div>
 
         <div className="mb-8">
+          {activeTab === "competitions" && recommendedCompetitions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-12"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h1 className="text-2xl font-semibold text-[#4B3F72] mb-1">
+                    Recommended For You
+                  </h1>
+                  <p className="text-gray-500">
+                    Based on your interest in {user?.domain || "your field"}
+                  </p>
+                </div>
+                <div className="text-sm text-[#4B3F72] bg-[#E3DFFF] bg-opacity-30 px-3 py-1 rounded-full">
+                  {recommendedCompetitions.length} suggestions
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recommendedCompetitions.map((item) => (
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                    className="bg-white rounded-xl shadow-md p-5 border border-[#E3DFFF] hover:shadow-lg transition-all relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B3F72] to-[#3A315A]"></div>
+                    
+                    <div className="flex justify-between items-start mb-4">
+                      <h2 className="text-lg font-bold text-[#4B3F72]">{item.title}</h2>
+                      <motion.span 
+                        whileHover={{ scale: 1.1 }}
+                        className="px-2 py-1 text-xs font-medium bg-[#E3DFFF] text-[#4B3F72] rounded-full"
+                      >
+                        suggestions
+                      </motion.span>
+                    </div>
+
+                    <div className="space-y-3 text-sm text-gray-600 mb-6">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                          <FaMapMarkerAlt className="w-4 h-4 text-[#4B3F72]" />
+                        </div>
+                        <span>{item.location}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                          <FaUserTie className="w-4 h-4 text-[#4B3F72]" />
+                        </div>
+                        <span>Organized by: {item.organiser}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                          <FaCalendarAlt className="w-4 h-4 text-[#4B3F72]" />
+                        </div>
+                        <span>{item.daysLeft} days remaining</span>
+                      </div>
+                      {item.prize && (
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                            <FaTrophy className="w-4 h-4 text-[#4B3F72]" />
+                          </div>
+                          <span>Prize: {item.prize}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => window.open(item.link, "_blank")}
+                        className="flex items-center px-4 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
+                      >
+                        <FaExternalLinkAlt className="mr-2" />
+                        View
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "#f8e3a0" }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => confirmParticipation(item._id)}
+                        className="flex items-center px-4 py-2 bg-[#FFF4E0] text-[#D4A017] rounded-lg hover:bg-[#f8e3a0] transition-colors"
+                      >
+                        Confirm
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "#f8d5d6" }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => fetchStats(item._id)}
+                        className="flex items-center px-4 py-2 bg-[#FFE5E6] text-[#EF767A] rounded-lg hover:bg-[#f8d5d6] transition-colors"
+                      >
+                        View Stats
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -360,7 +476,6 @@ export default function UserDashboard() {
                   whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
                   className="bg-white rounded-xl shadow-md p-5 border border-[#E3DFFF] hover:shadow-lg transition-all relative overflow-hidden"
                 >
-                  {/* Decorative accent */}
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B3F72] to-[#3A315A]"></div>
                   
                   <div className="flex justify-between items-start mb-4">
