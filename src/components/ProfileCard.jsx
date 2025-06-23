@@ -15,6 +15,7 @@ const ProfileCard = () => {
     Gender: "",
     domain: "",
     Dept: "",
+    coe:"",
     competitionWon: "",
     competitionParticipated: "",
     bio: "",
@@ -43,6 +44,7 @@ const ProfileCard = () => {
           Gender: data.Gender || "",
           domain: data.domain || "",
           Dept: data.Dept || "",
+          coe: data.coe || "",
           competitionWon: data.competitionStats?.won?.toString() || "",
           competitionParticipated: data.competitionStats?.attended?.toString() || "",
           bio: data.bio || "",
@@ -56,7 +58,7 @@ const ProfileCard = () => {
 
   const handleSubmit = async () => {
     const requiredFields = [
-      "fullName", "RegNo", "email", "batch", "Gender", "domain", "Dept", "bio",
+      "fullName", "RegNo", "email", "batch", "Gender", "domain", "Dept", "coe" , "bio",
       "competitionWon", "competitionParticipated"
     ];
 
@@ -74,6 +76,7 @@ const ProfileCard = () => {
       Gender: formData.Gender,
       domain: formData.domain,
       Dept: formData.Dept,
+      coe: formData.coe,
       bio: formData.bio,
       competitionStats: {
         won: isNaN(Number(formData.competitionWon)) ? 0 : Number(formData.competitionWon),
@@ -124,6 +127,7 @@ const ProfileCard = () => {
         <Input label="Register Number" name="RegNo" value={formData.RegNo} onChange={handleChange} />
         <Input label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
         <Input label="Batch" name="batch" value={formData.batch} onChange={handleChange} />
+        <Input label="coe" name="coe" value={formData.coe} onChange={handleChange} />
 
         <div>
           <label className="block text-xs sm:text-sm mb-1 font-medium">Gender</label>
