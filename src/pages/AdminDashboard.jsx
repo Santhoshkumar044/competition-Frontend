@@ -180,204 +180,176 @@ export default function HostDashboard() {
   };
 
   const renderCards = (data, type) => (
-    data.length === 0 ? (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col items-center justify-center py-12"
-      >
-        <div className="bg-[#E3DFFF] bg-opacity-20 p-8 rounded-full mb-6">
-          <FaPlus className="text-[#4B3F72] text-4xl opacity-60" />
-        </div>
-        <p className="text-lg font-light text-gray-500 mb-6">No {type} found matching your search</p>
-        <motion.button
-          whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(75, 63, 114, 0.2)" }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => activeTab === "competitions" ? navigate("/create-competition") : navigate("/create-event")}
-          className="px-6 py-3 bg-gradient-to-r from-[#4B3F72] to-[rgb(58,49,90)] text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center"
-        >
-          <FaPlus className="mr-2" />
-          Create New {type.slice(0, -1)}
-        </motion.button>
-      </motion.div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((item, index) => (
-          <motion.div
-            key={item._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-            className="bg-white rounded-xl shadow-md p-5 border border-[#E3DFFF] hover:shadow-lg transition-all relative overflow-hidden"
-          >
-            {/* Decorative accent */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B3F72] to-[#3A315A]"></div>
-            
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-lg font-bold text-[#4B3F72]">{item.title}</h2>
-              <motion.span 
-                whileHover={{ scale: 1.1 }}
-                className="px-2 py-1 text-xs font-medium bg-[#E3DFFF] text-[#4B3F72] rounded-full"
-              >
-                {item.mode || (type === "events" ? "Event" : "Competition")}
-              </motion.span>
-            </div>
-            
-            <div className="space-y-3 text-sm text-gray-600 mb-6">
-              {type === "events" ? (
-                <>
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
-                    </div>
-                    <span>{item.venueDetails?.location || "N/A"}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                    </div>
-                    <span>Date: {item.EventDate ? new Date(item.EventDate).toLocaleDateString() : "N/A"}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-                    <span>Time: {item.StartTime || "N/A"}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                      </svg>
-                    </div>
-                    <span>College: {item.collegeName || "N/A"}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-                    <span>Room: {item.venueDetails?.roomnumber || "N/A"}</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
-                    </div>
-                    <span>{item.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                      </svg>
-                    </div>
-                    <span>Organized by: {item.organiser}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                      <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-                    <span>{item.daysLeft} days remaining</span>
-                  </div>
-                  
-                  {item.prize && (
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
-                        <svg className="w-4 h-4 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      </div>
-                      <span>Prize: {item.prize}</span>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {type === "competitions" && (
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => window.open(item.link, "_blank")}
-                  className="flex items-center px-4 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
-                >
-                  <FaExternalLinkAlt className="mr-2" />
-                  View
-                </motion.button>
-              )}
-              <motion.button
-                whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleEdit(item, type)}
-                className="flex items-center px-4.5 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
-              >
-                <FaEdit className="mr-2" />
-                Edit
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleDelete(item._id, type)}
-                className="flex items-center px-5.5 py-2 bg-[#E3DFFF] text-[#4B3F72] rounded-lg hover:bg-[#d5d0f0] transition-colors"
-              >
-                <FaTrash className="mr-2" />
-                Delete
-              </motion.button>
-              {type === "competitions" && (
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: "#f8d5d6" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => fetchStats(item._id)}
-                  disabled={loadingStats}
-                  className={`flex items-center px-31 py-2 bg-[#FFE5E6] text-[#EF767A] rounded-lg hover:bg-[#f8d5d6] transition-colors ${
-                    loadingStats && visibleStatsId === item._id ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  <FaChartBar className="mr-2 " />
-                  {loadingStats && visibleStatsId === item._id ? (
-                    <span className="flex items-center">
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="inline-block"
-                      >
-                        ⏳
-                      </motion.span>
-                    </span>
-                  ) : 'Stats'}
-                </motion.button>
-              )}
-            </div>
-          </motion.div>
-        ))}
+  data.length === 0 ? (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col items-center justify-center py-12"
+    >
+      <div className="bg-[#E3DFFF] bg-opacity-20 p-6 rounded-full mb-4">
+        <FaPlus className="text-[#4B3F72] text-3xl opacity-60" />
       </div>
-    )
-  );
+      <p className="text-sm font-light text-gray-500 mb-4">No {type} found matching your search</p>
+      <motion.button
+        whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(75, 63, 114, 0.2)" }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => activeTab === "competitions" ? navigate("/create-competition") : navigate("/create-event")}
+        className="px-4 py-2 bg-gradient-to-r from-[#4B3F72] to-[rgb(58,49,90)] text-white rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex items-center text-sm"
+      >
+        <FaPlus className="mr-2 text-sm" />
+        Create New {type.slice(0, -1)}
+      </motion.button>
+    </motion.div>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {data.map((item, index) => (
+        <motion.div
+          key={item._id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.05 }}
+          whileHover={{ y: -3, boxShadow: "0 8px 20px -4px rgba(0, 0, 0, 0.1)" }}
+          className="bg-white rounded-lg shadow p-4 border border-[#E3DFFF] hover:shadow-md transition-all relative overflow-hidden"
+        >
+          {/* Accent */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B3F72] to-[#3A315A]" />
+
+          <div className="flex justify-between items-start mb-3">
+            <h2 className="text-base font-semibold text-[#4B3F72]">{item.title}</h2>
+            <motion.span 
+              whileHover={{ scale: 1.1 }}
+              className="px-2 py-0.5 text-xs font-medium bg-[#E3DFFF] text-[#4B3F72] rounded-full"
+            >
+              {item.mode || (type === "events" ? "Event" : "Competition")}
+            </motion.span>
+          </div>
+
+          <div className="space-y-2 text-xs text-gray-600 mb-4">
+            {type === "events" ? (
+              <>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    📍
+                  </div>
+                  <span>{item.venueDetails?.location || "N/A"}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    📅
+                  </div>
+                  <span>Date: {item.EventDate ? new Date(item.EventDate).toLocaleDateString() : "N/A"}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    🕒
+                  </div>
+                  <span>Time: {item.StartTime || "N/A"}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    🎓
+                  </div>
+                  <span>College: {item.collegeName || "N/A"}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    🏫
+                  </div>
+                  <span>Room: {item.venueDetails?.roomnumber || "N/A"}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    📍
+                  </div>
+                  <span>{item.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    🧑‍💼
+                  </div>
+                  <span>Organized by: {item.organiser}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    ⏳
+                  </div>
+                  <span>{item.daysLeft} days remaining</span>
+                </div>
+                {item.prize && (
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                      🏆
+                    </div>
+                    <span>Prize: {item.prize}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {type === "competitions" && (
+              <motion.button
+                whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => window.open(item.link, "_blank")}
+                className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+              >
+                <FaExternalLinkAlt className="mr-1 text-sm" />
+                View
+              </motion.button>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleEdit(item, type)}
+              className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+            >
+              <FaEdit className="mr-1 text-sm" />
+              Edit
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleDelete(item._id, type)}
+              className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+            >
+              <FaTrash className="mr-1 text-sm" />
+              Delete
+            </motion.button>
+            {type === "competitions" && (
+              <motion.button
+                whileHover={{ scale: 1.05, backgroundColor: "#f8d5d6" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => fetchStats(item._id)}
+                disabled={loadingStats}
+                className={`flex items-center px-3 py-1.5 bg-[#FFE5E6] text-[#EF767A] rounded-md hover:bg-[#f8d5d6] text-sm ${
+                  loadingStats && visibleStatsId === item._id ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <FaChartBar className="mr-1 text-sm" />
+                {loadingStats && visibleStatsId === item._id ? (
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="inline-block"
+                  >
+                    ⏳
+                  </motion.span>
+                ) : 'Stats'}
+              </motion.button>
+            )}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+);
+
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] text-[#1E1E1E] font-sans">
@@ -401,7 +373,8 @@ export default function HostDashboard() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-[#dcd8f1] shadow-sm relative z-10"
+        className="bg-[#dcd8f1] shadow-sm sticky top-0 z-10"
+        
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -483,7 +456,7 @@ export default function HostDashboard() {
                     <motion.button 
                       whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
                       onClick={() => navigate("/profile")}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors items-center"
                     >
                       <FaUserCircle className="mr-2 text-[#4B3F72]" />
                       Edit Profile
@@ -491,7 +464,7 @@ export default function HostDashboard() {
                     <motion.button 
                       whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
                       onClick={() => window.location.href = "/auth/logout"}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors items-center"
                     >
                       <svg className="w-4 h-4 mr-2 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -513,7 +486,7 @@ export default function HostDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow p-6 mb-8 border border-[#E3DFFF]"
+          className="bg-white rounded-xl shadow p-6 mb-8 border border-[#E3DFFF] sticky top-16 z-40"
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative flex-grow max-w-2xl">
