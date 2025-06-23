@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import { FaPhoneAlt, FaLinkedin, FaInstagram, FaEnvelope, FaArrowRight, FaUniversity, FaMapMarkerAlt, FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +6,15 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FloatingCampusModel from "../components/FloatingCampusModel";
 
+
 console.log(motion);
 console.log(toast);
 const FloatingOrbs = () => {
   const colors = ['#4B3F72', '#3A315A', '#E3DFFF', '#F7C59F'];
   
   return (
+  
+
     <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
       {Array.from({ length: 8 }).map((_, i) => {
         const size = Math.random() * 100 + 50;
@@ -60,7 +62,7 @@ const FeatureCard = ({ icon, title, description, delay }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
     whileHover={{ y: -10 }}
-    className="bg-white bg-opacity-90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-[#E3DFFF] flex flex-col items-center text-center"
+    className="bg-[#f4efec] bg-opacity-90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-[#E3DFFF] flex flex-col items-center text-center"
   >
     <div className="w-14 h-14 bg-[#4B3F72] bg-opacity-10 rounded-full flex items-center justify-center text-[#4B3F72] mb-4">
       {icon}
@@ -308,7 +310,7 @@ export default function H() {
               <div className="relative h-64 md:h-80">
                 <div className="absolute inset-0 bg-[#4B3F72] bg-opacity-10 rounded-2xl filter blur-xl"></div>
                 <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden border border-[#E3DFFF] bg-white shadow-lg">
-                   <FloatingCampusModel />
+                   <FloatingCampusModel />  
                 </div>
 
               </div>

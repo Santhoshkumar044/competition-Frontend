@@ -483,7 +483,7 @@ export default function HostDashboard() {
                     <motion.button 
                       whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
                       onClick={() => navigate("/profile")}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors items-center"
                     >
                       <FaUserCircle className="mr-2 text-[#4B3F72]" />
                       Edit Profile
@@ -491,7 +491,7 @@ export default function HostDashboard() {
                     <motion.button 
                       whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
                       onClick={() => window.location.href = "/auth/logout"}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors flex items-center"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors items-center"
                     >
                       <svg className="w-4 h-4 mr-2 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

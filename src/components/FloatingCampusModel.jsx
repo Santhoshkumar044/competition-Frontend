@@ -3,6 +3,7 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
+
 function FloatingBuilding({ scale = 0.05 }) {
   const { scene } = useGLTF("/models/clg1.glb");
   const ref = useRef();
