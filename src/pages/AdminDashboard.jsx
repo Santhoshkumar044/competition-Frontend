@@ -853,27 +853,25 @@ export default function HostDashboard() {
     }
   }, [searchTerm, competitions, events, activeTab]);
 
-  const handleDelete = async (id, type) => {
-    if (!window.confirm(`Are you sure you want to delete this ${type.slice(0, -1)}?`)) return;
-    
-    try {
-      const res = await fetch(`/api/${type}/${id}, { method: "DELETE" }`);
-      const data = await res.json();
+const handleReject = async (competitionId) => {
+  try {
+    const res = await fetch(`/api/host/competitions/${competitionId}/reject`, {
+      method: "PATCH",
+      credentials: "include"
+    });
 
-      if (res.ok) {
-        if (type === "competitions") {
-          setCompetitions((prev) => prev.filter((item) => item._id !== id));
-        } else {
-          setEvents((prev) => prev.filter((item) => item._id !== id));
-        }
-        toast.success(data.msg || "Deleted successfully");
-      } else {
-        toast.error(data.msg || "Delete failed");
-      }
-    } catch (err) {
-      toast.error("Server error during deletion",err);
+    if (res.ok) {
+      setCompetitions(prev => prev.filter(comp => comp._id !== competitionId));
+      toast.success("Competition rejected and removed!");
+    } else {
+      const data = await res.json();
+      toast.error(data.msg || "Rejection failed");
     }
-  };
+  } catch (err) {
+    console.error("Error rejecting competition:", err);
+    toast.error("Error rejecting competition");
+  }
+};
 
   const handleEdit = (item, type) => {
     const route = type === "competitions" ? "competition" : "event";
@@ -881,18 +879,19 @@ export default function HostDashboard() {
       state: { data: item, from: type },
     });
   };
-  const handleApprove = async (competitionId) => {
+const handleApprove = async (competitionId) => {
   try {
-    const res = await fetch(`/api/scraped-competitions/${competitionId}/approve, {
-      method: "POST",
+    const res = await fetch(`/api/host/competitions/${competitionId}/approve`, {
+      method: "PATCH",
       credentials: "include"
-    }`);
+    });
+
     const data = await res.json();
 
     if (res.ok) {
-      setCompetitions(prev => 
-        prev.map(comp => 
-          comp._id === competitionId ? { ...comp, isApproved: true } : comp
+      setCompetitions(prev =>
+        prev.map(comp =>
+          comp._id === competitionId ? { ...comp, status: "approved" } : comp
         )
       );
       toast.success("Competition approved successfully!");
@@ -904,6 +903,7 @@ export default function HostDashboard() {
     toast.error("Error approving competition");
   }
 };
+
   const renderCards = (data, type) => (
   data.length === 0 ? (
     <motion.div 
@@ -1040,11 +1040,11 @@ export default function HostDashboard() {
             <motion.button
               whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handleDelete(item._id, type)}
+              onClick={() => handleReject(item._id, type)}
               className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
             >
               <FaTrash className="mr-1 text-sm" />
-              Delete
+              Reject
             </motion.button>
             {type === "competitions" && (
               <motion.button
