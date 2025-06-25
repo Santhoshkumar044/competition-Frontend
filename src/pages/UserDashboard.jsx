@@ -88,45 +88,68 @@ export default function UserDashboard() {
       members: [''],
     });
   };
+const handleParticipationSubmit = async () => {
+  if (!selectedCompetitionId || !participationType) {
+    toast.error("Please select a competition and participation type.");
+    return;
+  }
 
-  const handleParticipationSubmit = async () => {
-    setRegistering(true);
-    try {
-      const res = await fetch("/api/competition/confirm-register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ 
-          competitionId: selectedCompetitionId,
-          participationType,
-          ...(participationType === 'team' && { teamDetails })
-        })
-      });
-      
-      const data = await res.json();
-      
-      if (res.ok) {
-        toast.success("Registration successful! 🎉");
-        setShowParticipationDialog(false);
-        // Refresh competitions data
-        const competitionsRes = await fetch("/api/competitions");
-        if (competitionsRes.ok) {
-          setCompetitions(await competitionsRes.json());
-        }
-        // Refresh recommended competitions
-        if (user?._id) {
-          await fetchRecommendedCompetitions(user._id);
-        }
-      } else {
-        toast.error(`Error: ${data.error || "Failed to register"}`);
-      }
-    } catch (err) {
-      console.error("Registration failed:", err);
-      toast.error("Something went wrong while registering.");
-    } finally {
-      setRegistering(false);
-    }
+  if (
+    participationType === "team" &&
+    (!teamDetails.name ||
+      teamDetails.members.length === 0 ||
+      teamDetails.members.some((email) => !email.trim()))
+  ) {
+    toast.warn("Please enter team name and all member emails.");
+    return;
+  }
+
+  const payload = {
+    competitionId: selectedCompetitionId,
+    type: participationType, // ✅ correct field name
+    ...(participationType === "team" && {
+      teamName: teamDetails.name,
+      teamMembers: teamDetails.members,
+    }),
   };
+
+  console.log("🚀 Sending payload:", payload); // for debug
+
+  setRegistering(true);
+  try {
+    const res = await fetch("/api/competition/confirm-register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast.success("✅ Registration successful!");
+      setShowParticipationDialog(false);
+      setParticipationType("");
+      setTeamDetails({ name: "", members: [""] });
+
+      const competitionsRes = await fetch("/api/competitions");
+      if (competitionsRes.ok) {
+        setCompetitions(await competitionsRes.json());
+      }
+
+      if (user?._id) {
+        await fetchRecommendedCompetitions(user._id);
+      }
+    } else {
+      toast.error(`❌ Error: ${data.error || "Failed to register"}`);
+    }
+  } catch (err) {
+    console.error("Registration failed:", err);
+    toast.error("Something went wrong while registering.");
+  } finally {
+    setRegistering(false);
+  }
+};
 
   const addTeamMember = () => {
     setTeamDetails(prev => ({
