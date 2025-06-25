@@ -190,7 +190,7 @@ export default function ConfirmedCompetitions() {
               <motion.button
                 whileHover={{ scale: 1.05, backgroundColor: "#4B3F72" }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate("/dashboard")}  // Fixed navigation
+                onClick={() => navigate("/user")}  // Fixed navigation
                 className="px-4 py-2 bg-[#4B3F72] text-white rounded-lg hover:bg-[#3A315A] transition"
               >
                 Browse Competitions
