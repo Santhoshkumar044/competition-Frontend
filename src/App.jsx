@@ -16,6 +16,8 @@ import EditEvent from "./pages/EditEvent";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import TemplatePage from "./pages/Template";
+import ConfirmedCompetitions from './pages/ConfirmedCompetitions';
+
 export default function App() {
   return (
     <Router>
@@ -45,7 +47,8 @@ export default function App() {
         <Route path="/home" element={<H />} />
         <Route path="/login" element={<Login />} />
         <Route path="/template" element={<TemplatePage />} />
-        
+        <Route path="/confirmed-competitions" element={<ConfirmedCompetitions />} />
+
       </Routes>
     </Router>
   );
