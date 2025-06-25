@@ -1022,7 +1022,7 @@ const handleApprove = async (competitionId) => {
                 whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => window.open(item.link, "_blank")}
-                className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+                className="flex items-center px-7 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
               >
                 <FaExternalLinkAlt className="mr-1 text-sm" />
                 View
@@ -1032,7 +1032,7 @@ const handleApprove = async (competitionId) => {
               whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleEdit(item, type)}
-              className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+              className="flex items-center px-7 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
             >
               <FaEdit className="mr-1 text-sm" />
               Edit
@@ -1041,7 +1041,7 @@ const handleApprove = async (competitionId) => {
               whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleReject(item._id, type)}
-              className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+              className="flex items-center px-7 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
             >
               <FaTrash className="mr-1 text-sm" />
               Reject
@@ -1052,7 +1052,7 @@ const handleApprove = async (competitionId) => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => fetchStats(item._id)}
                 disabled={loadingStats}
-                className={`flex items-center px-3 py-1.5 bg-[#FFE5E6] text-[#EF767A] rounded-md hover:bg-[#f8d5d6] text-sm ${
+                className={`flex items-center px-14 py-1.5 bg-[#FFE5E6] text-[#EF767A] rounded-md hover:bg-[#f8d5d6] text-sm ${
                   loadingStats && visibleStatsId === item._id ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -1075,7 +1075,7 @@ const handleApprove = async (competitionId) => {
                 whileHover={{ scale: 1.05, backgroundColor: "#d0f0d5" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleApprove(item._id)}
-                className="flex items-center px-3 py-1.5 bg-[#E0FFE5] text-[#2E7D32] rounded-md hover:bg-[#d0f0d5] text-sm"
+                className="flex items-center px-14 py-1.5 bg-[#E0FFE5] text-[#2E7D32] rounded-md hover:bg-[#d0f0d5] text-sm"
               >
                 Approve
               </motion.button>
