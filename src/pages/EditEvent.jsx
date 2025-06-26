@@ -66,10 +66,22 @@ export default function EditEvent() {
     roomnumber: "",
     location: "",
     capacity: "",
+    EventDate: "",
     startTime: "",
     endTime: "",
   });
 
+  // Format date to YYYY-MM-DD
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.toISOString().slice(0, 10);
+  };
+
+  // Format time to HH:mm
+  const formatTime = (timeStr) => {
+    const d = new Date(timeStr);
+    return d.toISOString().slice(11, 16);
+  };
   useEffect(() => {
     const event = state?.data;
     if (event) {
@@ -80,8 +92,9 @@ export default function EditEvent() {
         roomnumber: event.venueDetails?.roomnumber || "",
         location: event.venueDetails?.location || "",
         capacity: event.venueDetails?.capacity || "",
-        startTime: formatForInput(event.startTime),
-        endTime: formatForInput(event.endTime),
+        EventDate: formatDate(event.EventDate),
+        startTime: formatTime(event.startTime),
+        endTime: formatTime(event.endTime)
       });
       setLoading(false);
     } else {
@@ -95,8 +108,9 @@ export default function EditEvent() {
             roomnumber: data.venueDetails?.roomnumber || "",
             location: data.venueDetails?.location || "",
             capacity: data.venueDetails?.capacity || "",
-            startTime: formatForInput(data.startTime),
-            endTime: formatForInput(data.endTime),
+            EventDate: formatDate(data.EventDate),
+            startTime: formatTime(data.startTime),
+            endTime: formatTime(data.endTime)
           });
           setLoading(false);
         })
@@ -117,17 +131,18 @@ export default function EditEvent() {
 
     // Convert input strings back to proper Date objects
     const payload = {
-      title: formData.title,
-      description: formData.description,
-      collegeName: formData.collegeName,
-      startTime: new Date(formData.startTime).toISOString(),
-      endTime: new Date(formData.endTime).toISOString(),
-      venueDetails: {
-        roomnumber: formData.roomnumber,
-        location: formData.location,
-        capacity: parseInt(formData.capacity),
-      },
-    };
+          title: formData.title,
+          description: formData.description,
+          collegeName: formData.collegeName,
+          EventDate: formData.EventDate, // "08-07-2025"
+          startTime: formData.startTime, // "09:00"
+          endTime: formData.endTime,     // "10:00"
+          venueDetails: {
+              roomnumber: formData.roomnumber,
+              location: formData.location,
+              capacity: parseInt(formData.capacity),
+            },
+      };
 
     try {
       const res = await fetch(`/api/events/${id}`, {
@@ -252,8 +267,9 @@ export default function EditEvent() {
                 { name: "roomnumber", label: "Room Number", type: "text", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
                 { name: "location", label: "Location", type: "text", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" },
                 { name: "capacity", label: "Capacity", type: "number", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
-                { name: "startTime", label: "Start Time", type: "datetime-local", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
-                { name: "endTime", label: "End Time", type: "datetime-local", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+                { name: "EventDate", label: "EventDate", type: "date", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+                { name: "startTime", label: "Start Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+                { name: "endTime", label: "End Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
               ].map((field, index) => (
                 <motion.div
                   key={field.name}
