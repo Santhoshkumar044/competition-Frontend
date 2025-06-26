@@ -12,7 +12,7 @@ export default function CreateEvent() {
     description: "",
     collegeName: "",
     roomnumber: "",
-    eventDate: "",
+    EventDate: "",
     startTime: "",
     endTime: "",
   });
@@ -27,20 +27,24 @@ export default function CreateEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { title, description, collegeName, roomnumber, eventDate, startTime, endTime } = formData;
+      const { title, description, collegeName, roomnumber, EventDate, startTime, endTime } = formData;
 
-      // Combine date + time into full Date objects
-      const formattedStartTime = new Date(`${eventDate}T${startTime}`);
-      const formattedEndTime = new Date(`${eventDate}T${endTime}`);
+      // // Combine date + time into full Date objects
+      // const formattedStartTime = new Date(`${eventDate}T${startTime}`);
+      // const formattedEndTime = new Date(`${eventDate}T${endTime}`);
 
       const payload = {
         title,
         description,
         collegeName,
         roomnumber,
-        startTime: formattedStartTime.toISOString(),
-        endTime: formattedEndTime.toISOString(),
+        EventDate,
+        // startTime: formattedStartTime.toISOString(),
+        // endTime: formattedEndTime.toISOString(),
+        startTime,
+        endTime
       };
+
 
       const response = await fetch("/api/events", {
         method: "POST",
@@ -91,7 +95,7 @@ export default function CreateEvent() {
       icon: <FaDoorOpen className="text-[#4B3F72]" /> 
     },
     { 
-      name: "eventDate", 
+      name: "EventDate", 
       label: "Event Date", 
       type: "date", 
       icon: <FaCalendarAlt className="text-[#4B3F72]" /> 
