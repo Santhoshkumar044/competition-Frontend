@@ -2459,7 +2459,14 @@ const handleApprove = async (competitionId) => {
                   <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
                     🕒
                   </div>
-                  <span>Time: {item.StartTime || "N/A"}</span>
+                  <span>StartTime: {item.startTime ? new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
+                    🕒
+                  </div>
+                   <span>EndTime: {item.endTime ? new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}</span>
+
                 </div>
                 <div className="flex items-center">
                   <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
