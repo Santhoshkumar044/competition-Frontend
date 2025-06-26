@@ -154,7 +154,7 @@ export default function EditEvent() {
       const result = await res.json();
 
       if (res.ok) {
-        toast.success("🎉 Event updated successfully!");
+        toast.success("🎉 Event Updated successfully!");
         setTimeout(() => navigate("/host-dashboard"), 1500);
       } else {
         toast.error(result.msg || result.message || "Update failed");
@@ -327,7 +327,6 @@ export default function EditEvent() {
           </form>
         </motion.div>
       </main>
-
       <ToastContainer 
         position="top-center"
         autoClose={3000}
