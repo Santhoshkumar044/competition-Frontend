@@ -2326,7 +2326,6 @@ export default function HostDashboard() {
   }, [searchTerm, competitions, events, activeTab]);
 
  const handleReject = async (id, type) => {
-  if (!window.confirm(`Are you sure you want to reject this ${type.slice(0, -1)}?`)) return;
 
   try {
     if (type === "competitions") {
