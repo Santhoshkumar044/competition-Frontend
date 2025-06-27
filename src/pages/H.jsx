@@ -127,13 +127,20 @@ export default function H() {
         className="bg-white bg-opacity-80 backdrop-blur-md shadow-sm px-4 md:px-8 pt-6 md:pt-8 z-10 sticky top-0"
       >
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center gap-2"
-          >
-            <div className="w-8 h-8 bg-[#4B3F72] rounded-full flex items-center justify-center text-white font-bold">C</div>
-            <span className="text-[#4B3F72] text-xl font-bold tracking-wide">CIT CHENNAI</span>
-          </motion.div>
+          <motion.a 
+  whileHover={{ scale: 1.05 }}
+  href="https://www.citchennai.edu.in/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-2"
+>
+  <img 
+    src="../models/citlogo.png" 
+    alt="CIT Chennai Logo" 
+    className="w-80 h-20 object-contain"
+  />
+</motion.a>
+
           
           <nav className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-6 items-center">
             {['About', 'Features', 'Contact'].map((item, index) => (
@@ -295,6 +302,19 @@ export default function H() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
+                <div className="flex justify-center gap-6 mb-4">
+  <img 
+    src="../models/citil.png" 
+    alt="Campus Image 1" 
+    className="w-50 h-24 rounded-xl shadow-md object-cover"
+  />
+  <img 
+    src="../models/citbif.png" 
+    alt="Campus Image 2" 
+    className="w-24 h-24 rounded-xl shadow-md object-cover"
+  />
+</div>
+
                 <h2 className="text-3xl font-bold text-[#4B3F72] mb-6">About CIT</h2>
                 <div className="space-y-4 text-[#4B3F72] text-opacity-90">
                   <p>
