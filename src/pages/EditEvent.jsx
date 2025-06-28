@@ -70,7 +70,7 @@ export default function EditEvent() {
     startTime: "",
     endTime: "",
   });
-  
+
   useEffect(() => {
     const event = state?.data;
     if (event) {
