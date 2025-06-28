@@ -11,12 +11,13 @@ export default function CreateEvent() {
     title: "",
     description: "",
     collegeName: "",
-    roomnumber: "",
+    name: "",
     EventDate: "",
     startTime: "",
     endTime: "",
   });
-
+  
+  const today = new Date().toISOString().split("T")[0];
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,17 +28,26 @@ export default function CreateEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { title, description, collegeName, roomnumber, EventDate, startTime, endTime } = formData;
+      const { title, description, collegeName, name, EventDate, startTime, endTime } = formData;
 
       // // Combine date + time into full Date objects
       // const formattedStartTime = new Date(`${eventDate}T${startTime}`);
       // const formattedEndTime = new Date(`${eventDate}T${endTime}`);
 
+    const fullStartTime = new Date(`${EventDate}T${startTime}`);
+    const fullEndTime = new Date(`${EventDate}T${endTime}`);
+
+    // ✅ Time validation
+    if (fullStartTime >= fullEndTime) {
+      toast.error("Start time must be earlier than end time.");
+      return;
+    }
+
       const payload = {
         title,
         description,
         collegeName,
-        roomnumber,
+        name,
         EventDate,
         // startTime: formattedStartTime.toISOString(),
         // endTime: formattedEndTime.toISOString(),
@@ -89,7 +99,7 @@ export default function CreateEvent() {
       icon: <FaUniversity className="text-[#4B3F72]" /> 
     },
     { 
-      name: "roomnumber", 
+      name: "name", 
       label: "Room Number", 
       type: "text", 
       icon: <FaDoorOpen className="text-[#4B3F72]" /> 
@@ -205,7 +215,7 @@ export default function CreateEvent() {
                   key={field.name}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.6 + (index * 0.05) }}
+                  transition={{ duration: 0.3, delay: 0.6 + index * 0.05 }}
                   className="space-y-2"
                 >
                   <label className="flex items-center text-sm font-medium text-gray-700">
@@ -230,6 +240,7 @@ export default function CreateEvent() {
                       value={formData[field.name]}
                       onChange={handleChange}
                       required
+                      {...(field.name === "EventDate" ? { min: today } : {})}
                       className="w-full px-4 py-3 border border-[#E3DFFF] rounded-lg focus:ring-2 focus:ring-[#4B3F72] focus:border-[#4B3F72] transition-all hover:border-[#4B3F72]"
                     />
                   )}
