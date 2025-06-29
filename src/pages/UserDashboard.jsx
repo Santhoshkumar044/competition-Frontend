@@ -37,6 +37,9 @@ export default function UserDashboard() {
     members: [''],
   });
 
+  const allCompetitions = useMemo(() => {
+    return [...competitions, ...recommendedCompetitions];
+  }, [competitions, recommendedCompetitions]);
   // Event registration handlers
   const handleRegisterEvent = (eventId) => {
     setSelectedEventId(eventId);
@@ -91,6 +94,7 @@ export default function UserDashboard() {
       members: [''],
     });
   };
+
 const handleParticipationSubmit = async () => {
   if (!selectedCompetitionId || !participationType) {
     toast.error("Please select a competition and participation type.");
@@ -109,14 +113,14 @@ const handleParticipationSubmit = async () => {
 
   const payload = {
     competitionId: selectedCompetitionId,
-    type: participationType, // ✅ correct field name
+    type: participationType,
     ...(participationType === "team" && {
       teamName: teamDetails.name,
       teamMembers: teamDetails.members,
     }),
   };
 
-  console.log("🚀 Sending payload:", payload); // for debug
+  console.log("🚀 Sending payload:", payload);
 
   setRegistering(true);
   try {
@@ -143,6 +147,9 @@ const handleParticipationSubmit = async () => {
       if (user?._id) {
         await fetchRecommendedCompetitions(user._id);
       }
+      setUnconfirmedCompetitions((prev) =>
+        prev.filter((comp) => comp.competitionId !== selectedCompetitionId)
+      );
     } else {
       toast.error(`❌ Error: ${data.error || "Failed to register"}`);
     }
@@ -176,7 +183,31 @@ const handleParticipationSubmit = async () => {
       )
     }));
   };
+    const markAsViewed = async (email, competitionId) => {
+      try {
+        await fetch("/api/user/view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, competitionId }),
+        });
+      } catch (err) {
+        console.error("❌ Error marking as viewed:", err);
+      }
+    };
 
+    const confirmViewedCompetition = async (email, competitionId) => {
+      try {
+        await fetch("/api/user/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, competitionId }),
+        });
+      } catch (err) {
+        console.error("Error confirming viewed competition:", err);
+      }
+    };
   // Data fetching
   const fetchRecommendedCompetitions = async (userId) => {
     try {
@@ -199,7 +230,7 @@ const handleParticipationSubmit = async () => {
         const userData = await userRes.json();
         setUser(userData);
         if (userData?.email) {
-  const res = await fetch(`/api/view/unconfirmed/${userData.email}`);
+  const res = await fetch(`/api/user/unconfirmed/${userData.email}`);
   if (res.ok) {
     const data = await res.json();
     if (data.length > 0) {
@@ -234,6 +265,16 @@ const handleParticipationSubmit = async () => {
 
     fetchData();
   }, [activeTab]);
+
+  useEffect(() => {
+    if (!showParticipationDialog) {
+      if (unconfirmedCompetitions.length > 0) {
+        setShowUnconfirmedPopup(true);
+      } else {
+        setShowUnconfirmedPopup(false); 
+      }
+    }
+  }, [showParticipationDialog, unconfirmedCompetitions.length]);
 
   const filteredItems = useMemo(() => {
     const items = activeTab === "competitions" ? competitions : events;
@@ -292,15 +333,21 @@ const handleParticipationSubmit = async () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => window.open(item.link, "_blank")}
-            className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
-          >
-            <FaExternalLinkAlt className="mr-1 text-sm" />
-            View
-          </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05, backgroundColor: "#d5d0f0" }}
+          whileTap={{ scale: 0.98 }}
+          onClick={async () => {
+            if (user?.email) {
+              await markAsViewed(user.email, item._id);
+            }
+            window.open(item.link, "_blank");
+          }}
+          className="flex items-center px-3 py-1.5 bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] text-sm"
+        >
+          <FaExternalLinkAlt className="mr-1 text-sm" />
+          View
+        </motion.button>
+
 
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "#f8e3a0" }}
@@ -825,8 +872,9 @@ const handleParticipationSubmit = async () => {
         toastClassName="rounded-lg shadow-lg"
         bodyClassName="font-sans p-4"
       />
-      <AnimatePresence>
-  {showUnconfirmedPopup && (
+     
+<AnimatePresence>
+  {showUnconfirmedPopup && !showParticipationDialog && (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -843,29 +891,36 @@ const handleParticipationSubmit = async () => {
           You've viewed competitions!
         </h2>
         <p className="text-gray-600 mb-3">
-          You recently viewed the following competitions. Would you like to confirm your registration?
+          Please confirm the competitions you're interested in:
         </p>
-        <ul className="list-disc list-inside text-sm text-[#3A315A] mb-4 max-h-[120px] overflow-y-auto">
-          {unconfirmedCompetitions.map((item) => (
-            <li key={item.competitionId}>{item.competitionId}</li>
-          ))}
+        <ul className="space-y-3 max-h-[250px] overflow-y-auto mb-4">
+          {unconfirmedCompetitions.map((item) => {
+           const compTitle = allCompetitions.find(c => c._id === item.competitionId)?.title || item.competitionId;
+            return (
+              <li key={item.competitionId} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded">
+                <span className="text-sm text-[#3A315A]">{compTitle}</span>
+                <button
+                  className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A]"
+                  onClick={async () => {
+                    if (user?.email) {
+                      await confirmViewedCompetition(user.email, item.competitionId);
+                    }
+                    setShowUnconfirmedPopup(false);
+                    handleConfirmClick(item.competitionId);
+                  }}
+                  >
+                  Confirm
+                </button>
+              </li>
+            );
+          })}
         </ul>
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end">
           <button
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
             onClick={() => setShowUnconfirmedPopup(false)}
           >
-            Skip
-          </button>
-          <button
-            className="px-4 py-2 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A]"
-            onClick={() => {
-              setShowUnconfirmedPopup(false);
-              // Automatically open confirmation for first one (or do loop later)
-              handleConfirmClick(unconfirmedCompetitions[0].competitionId);
-            }}
-          >
-            Confirm Now
+            Skip All
           </button>
         </div>
       </motion.div>
