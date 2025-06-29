@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 
+const _motion = motion;
 export default function ConfirmedCompetitions() {
   const navigate = useNavigate();
   const [confirmedCompetitions, setConfirmedCompetitions] = useState([]);

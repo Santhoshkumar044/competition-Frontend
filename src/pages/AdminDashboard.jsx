@@ -2477,7 +2477,7 @@ const handleApprove = async (competitionId) => {
                   <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
                     🏫
                   </div>
-                  <span>Room: {item.venueDetails?.roomnumber || "N/A"}</span>
+                  <span>Room: {item.venueDetails?.name || "N/A"}</span>
                 </div>
               </>
             ) : (

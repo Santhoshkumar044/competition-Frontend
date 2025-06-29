@@ -63,25 +63,14 @@ export default function EditEvent() {
     title: "",
     description: "",
     collegeName: "",
-    roomnumber: "",
+    name: "",
     location: "",
     capacity: "",
-    EventDate: "",
+    eventDate: "",
     startTime: "",
     endTime: "",
   });
 
-  // Format date to YYYY-MM-DD
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toISOString().slice(0, 10);
-  };
-
-  // Format time to HH:mm
-  const formatTime = (timeStr) => {
-    const d = new Date(timeStr);
-    return d.toISOString().slice(11, 16);
-  };
   useEffect(() => {
     const event = state?.data;
     if (event) {
@@ -89,12 +78,12 @@ export default function EditEvent() {
         title: event.title || "",
         description: event.description || "",
         collegeName: event.collegeName || "",
-        roomnumber: event.venueDetails?.roomnumber || "",
+        name: event.venueDetails?.name || "",
         location: event.venueDetails?.location || "",
         capacity: event.venueDetails?.capacity || "",
-        EventDate: formatDate(event.EventDate),
-        startTime: formatTime(event.startTime),
-        endTime: formatTime(event.endTime)
+        eventDate: event.EventDate ? new Date(event.EventDate).toISOString().split("T")[0] : "",
+        startTime: formatForInput(event.startTime),
+        endTime: formatForInput(event.endTime),
       });
       setLoading(false);
     } else {
@@ -105,12 +94,12 @@ export default function EditEvent() {
             title: data.title || "",
             description: data.description || "",
             collegeName: data.collegeName || "",
-            roomnumber: data.venueDetails?.roomnumber || "",
+            name: data.venueDetails?.name || "",
             location: data.venueDetails?.location || "",
             capacity: data.venueDetails?.capacity || "",
-            EventDate: formatDate(data.EventDate),
-            startTime: formatTime(data.startTime),
-            endTime: formatTime(data.endTime)
+            eventDate: data.EventDate ? new Date(data.EventDate).toISOString().split("T")[0] : "",
+            startTime: formatForInput(data.startTime),
+            endTime: formatForInput(data.endTime),
           });
           setLoading(false);
         })
@@ -125,45 +114,52 @@ export default function EditEvent() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const formattedStart = new Date(`${formData.eventDate}T${formData.startTime}`);
+  const formattedEnd = new Date(`${formData.eventDate}T${formData.endTime}`);
 
-    // Convert input strings back to proper Date objects
-    const payload = {
-          title: formData.title,
-          description: formData.description,
-          collegeName: formData.collegeName,
-          EventDate: formData.EventDate, // "08-07-2025"
-          startTime: formData.startTime, // "09:00"
-          endTime: formData.endTime,     // "10:00"
-          venueDetails: {
-              roomnumber: formData.roomnumber,
-              location: formData.location,
-              capacity: parseInt(formData.capacity),
-            },
-      };
+  if (formattedStart >= formattedEnd) {
+    toast.error("Start time must be before end time");
+    return;
+  }
 
-    try {
-      const res = await fetch(`/api/events/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        toast.success("🎉 Event Updated successfully!");
-        setTimeout(() => navigate("/host-dashboard"), 1500);
-      } else {
-        toast.error(result.msg || result.message || "Update failed");
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      toast.error("😟 Update failed: Server error");
-    }
+  const payload = {
+    title: formData.title,
+    description: formData.description,
+    collegeName: formData.collegeName,
+    EventDate: formData.eventDate,
+    startTime: formattedStart.toISOString(),
+    endTime: formattedEnd.toISOString(),
+    venueDetails: {
+      name: formData.name,
+      location: formData.location,
+      capacity: parseInt(formData.capacity),
+    },
   };
+
+  try {
+    const res = await fetch(`/api/events/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      toast.success("🎉 Event updated successfully!");
+      setTimeout(() => navigate("/host-dashboard"), 1500);
+    } else {
+      toast.error(result.msg || result.message || "Update failed");
+    }
+  } catch (err) {
+    console.error("Network error:", err);
+    toast.error("😟 Update failed: Server error");
+  }
+};
+
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-[#F5F7FA]">
@@ -264,10 +260,10 @@ export default function EditEvent() {
                 { name: "title", label: "Event Title", type: "text", icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
                 { name: "description", label: "Description", type: "text", icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" },
                 { name: "collegeName", label: "College Name", type: "text", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
-                { name: "roomnumber", label: "Room Number", type: "text", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+                { name: "name", label: "Room Number", type: "text", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
                 { name: "location", label: "Location", type: "text", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" },
                 { name: "capacity", label: "Capacity", type: "number", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
-                { name: "EventDate", label: "EventDate", type: "date", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+                { name: "eventDate", label: "Event Date", type: "date", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
                 { name: "startTime", label: "Start Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
                 { name: "endTime", label: "End Time", type: "time", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
               ].map((field, index) => (
@@ -291,7 +287,11 @@ export default function EditEvent() {
                     value={formData[field.name]}
                     onChange={handleChange}
                     required
-                    min={field.name === "endTime" ? formData.startTime : undefined}
+                    min={field.name === "eventDate" 
+                        ? new Date().toISOString().split("T")[0] 
+                        : field.name === "endTime" 
+                        ? formData.startTime 
+                        : undefined}
                     className="w-full px-4 py-3 border border-[#E3DFFF] rounded-lg focus:ring-2 focus:ring-[#4B3F72] focus:border-[#4B3F72] transition-all hover:border-[#4B3F72] bg-[#F5F7FA]"
                   />
                 </motion.div>
@@ -327,6 +327,7 @@ export default function EditEvent() {
           </form>
         </motion.div>
       </main>
+
       <ToastContainer 
         position="top-center"
         autoClose={3000}
