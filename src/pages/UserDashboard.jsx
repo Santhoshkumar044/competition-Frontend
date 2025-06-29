@@ -19,6 +19,9 @@ export default function UserDashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [unconfirmedCompetitions, setUnconfirmedCompetitions] = useState([]);
+  const [showUnconfirmedPopup, setShowUnconfirmedPopup] = useState(false);
+  
 
   // Event registration states
   const [selectedEventId, setSelectedEventId] = useState(null);
@@ -195,6 +198,17 @@ const handleParticipationSubmit = async () => {
         if (!userRes.ok) throw new Error("Failed to fetch user profile");
         const userData = await userRes.json();
         setUser(userData);
+        if (userData?.email) {
+  const res = await fetch(`/api/view/unconfirmed/${userData.email}`);
+  if (res.ok) {
+    const data = await res.json();
+    if (data.length > 0) {
+      setUnconfirmedCompetitions(data);
+      setShowUnconfirmedPopup(true);
+    }
+  }
+}
+
         
         if (userData?._id) {
           await fetchRecommendedCompetitions(userData._id);
@@ -811,6 +825,54 @@ const handleParticipationSubmit = async () => {
         toastClassName="rounded-lg shadow-lg"
         bodyClassName="font-sans p-4"
       />
+      <AnimatePresence>
+  {showUnconfirmedPopup && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[999]"
+    >
+      <motion.div
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.9 }}
+        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
+      >
+        <h2 className="text-xl font-semibold text-[#4B3F72] mb-4">
+          You've viewed competitions!
+        </h2>
+        <p className="text-gray-600 mb-3">
+          You recently viewed the following competitions. Would you like to confirm your registration?
+        </p>
+        <ul className="list-disc list-inside text-sm text-[#3A315A] mb-4 max-h-[120px] overflow-y-auto">
+          {unconfirmedCompetitions.map((item) => (
+            <li key={item.competitionId}>{item.competitionId}</li>
+          ))}
+        </ul>
+        <div className="flex justify-end gap-4">
+          <button
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            onClick={() => setShowUnconfirmedPopup(false)}
+          >
+            Skip
+          </button>
+          <button
+            className="px-4 py-2 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A]"
+            onClick={() => {
+              setShowUnconfirmedPopup(false);
+              // Automatically open confirmation for first one (or do loop later)
+              handleConfirmClick(unconfirmedCompetitions[0].competitionId);
+            }}
+          >
+            Confirm Now
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </div>
   );
 }
