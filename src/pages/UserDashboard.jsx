@@ -636,8 +636,11 @@ const handleParticipationSubmit = async () => {
                       <div className="flex items-center">
                         📍 <span className="ml-2">{item.venueDetails?.location || "N/A"}</span>
                       </div>
+                       <div className="flex items-center">
+                        🏫 <span>Room: {item.venueDetails?.name || "N/A"}</span>
+                    </div>
                       <div className="flex items-center">
-                        📅 <span className="ml-2">Date: {item.startTime ? new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}</span>
+                        📅  <span>Date: {item.EventDate ? new Date(item.EventDate).toLocaleDateString() : "N/A"}</span>
                       </div>
                       <div className="flex items-center">
                   <div className="w-6 h-6 rounded-full bg-[#E3DFFF] bg-opacity-30 flex items-center justify-center mr-2">
