@@ -872,61 +872,69 @@ const handleParticipationSubmit = async () => {
         toastClassName="rounded-lg shadow-lg"
         bodyClassName="font-sans p-4"
       />
-     
-<AnimatePresence>
-  {showUnconfirmedPopup && !showParticipationDialog && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[999]"
-    >
-      <motion.div
-        initial={{ scale: 0.9 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.9 }}
-        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
-      >
-        <h2 className="text-xl font-semibold text-[#4B3F72] mb-4">
-          You've viewed competitions!
-        </h2>
-        <p className="text-gray-600 mb-3">
-          Please confirm the competitions you're interested in:
-        </p>
-        <ul className="space-y-3 max-h-[250px] overflow-y-auto mb-4">
-          {unconfirmedCompetitions.map((item) => {
-           const compTitle = allCompetitions.find(c => c._id === item.competitionId)?.title || item.competitionId;
-            return (
-              <li key={item.competitionId} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded">
-                <span className="text-sm text-[#3A315A]">{compTitle}</span>
-                <button
-                  className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A]"
-                  onClick={async () => {
-                    if (user?.email) {
-                      await confirmViewedCompetition(user.email, item.competitionId);
-                    }
-                    setShowUnconfirmedPopup(false);
-                    handleConfirmClick(item.competitionId);
-                  }}
-                  >
-                  Confirm
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="flex justify-end">
-          <button
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-            onClick={() => setShowUnconfirmedPopup(false)}
+    <AnimatePresence>
+      {showUnconfirmedPopup && !showParticipationDialog && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[999] px-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.9 }}
+            className="bg-white rounded-xl shadow-xl w-full max-w-md p-5 sm:p-6"
           >
-            Skip All
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+            <h2 className="text-lg sm:text-xl font-semibold text-[#4B3F72] mb-3 sm:mb-4 text-center">
+              You've viewed competitions!
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 text-center">
+              Please confirm the competitions you're interested in:
+            </p>
+
+            <ul className="space-y-3 max-h-[250px] overflow-y-auto mb-5">
+              {unconfirmedCompetitions.map((item) => {
+                const compTitle =
+                  allCompetitions.find(c => c._id === item.competitionId)?.title ||
+                  item.competitionId;
+                return (
+                  <li
+                    key={item.competitionId}
+                    className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded"
+                  >
+                    <span className="text-sm text-[#3A315A] break-words max-w-[60%]">
+                      {compTitle}
+                    </span>
+                    <button
+                      className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A] transition"
+                      onClick={async () => {
+                        if (user?.email) {
+                          await confirmViewedCompetition(user.email, item.competitionId);
+                        }
+                        setShowUnconfirmedPopup(false);
+                        handleConfirmClick(item.competitionId);
+                      }}
+                    >
+                      Confirm
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="flex justify-center">
+              <button
+                className="px-4 py-2 w-full sm:w-auto bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
+                onClick={() => setShowUnconfirmedPopup(false)}
+              >
+                Skip All
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
 
     </div>
   );
