@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { formatForInput } from "../components/dateUtils.jsx";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaSave, FaTimes } from "react-icons/fa";
-const _mation = motion;
+const _motion = motion;
 const BubbleBackground = () => {
   const bubbles = Array.from({ length: 15 });
   

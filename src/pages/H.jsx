@@ -16,8 +16,14 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FloatingCampusModel from "../components/FloatingCampusModel";
 
+
+
+const _motion = motion;
+const _toast = toast;
 const FloatingOrbs = () => {
   const colors = ['#4B3F72', '#3A315A', '#E3DFFF', '#F7C59F'];
+
+
   
   return (
     <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
@@ -67,7 +73,7 @@ const FeatureCard = ({ icon, title, description, delay }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
     whileHover={{ y: -10 }}
-    className="bg-[#f4efec] bg-opacity-90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-[#E3DFFF] flex flex-col items-center text-center h-full"
+    className="bg-[#f4f4f4] bg-opacity-90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-[#E3DFFF] flex flex-col items-center text-center h-full"
   >
     <div className="w-14 h-14 bg-[#4B3F72] bg-opacity-10 rounded-full flex items-center justify-center text-[#4B3F72] mb-4">
       {icon}
@@ -251,6 +257,22 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+      {/* Horizontal Scrollable Card Section */}
+<section className="relative z-10 px-4 md:px-8 py-8 bg-white bg-opacity-60 backdrop-blur-md">
+  <h2 className="text-2xl md:text-3xl font-bold text-[#4B3F72] mb-6 text-center">What's Trending</h2>
+
+  <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-thin scrollbar-thumb-[#4B3F72]/60 scrollbar-track-transparent">
+    {[...Array(6)].map((_, index) => (
+      <div
+        key={index}
+        className="min-w-[250px] sm:min-w-[300px] h-40 sm:h-48 bg-white border border-[#E3DFFF] shadow-md rounded-xl flex items-center justify-center text-[#4B3F72] font-semibold text-lg flex-shrink-0"
+      >
+        Card {index + 1}
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* Features Section */}
       <section id="features" className="relative z-10 py-12 md:py-16 px-4 md:px-8 bg-white bg-opacity-50 backdrop-blur-sm">
@@ -269,24 +291,28 @@ export default function HomePage() {
           </motion.div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <FeatureCard
-              icon={<FaCalendarAlt className="text-2xl md:text-3xl text-[#4B3F72]" />}
-              title="Campus Events"
-              description="Discover all upcoming events happening across CIT in one place."
-              delay={0.2}
-            />
-            <FeatureCard
-              icon={<FaTrophy className="text-2xl md:text-3xl text-[#4B3F72]" />}
-              title="Competitions"
-              description="Participate in coding, cultural and technical competitions."
-              delay={0.4}
-            />
-            <FeatureCard
-              icon={<FaBell className="text-2xl md:text-3xl text-[#4B3F72]" />}
-              title="Real-time Updates"
-              description="Get instant details about event changes."
-              delay={0.6}
-            />
+           <FeatureCard
+  icon={<img src="/models/events.svg" alt="Events" className="w-7 h-7 md:w-8 md:h-8" />}
+  title="Campus Events"
+  description="Discover all upcoming events happening across CIT in one place."
+  delay={0.2}
+/>
+
+<FeatureCard
+  icon={<img src="/models/competitions.svg" alt="Competitions" className="w-7 h-7 md:w-8 md:h-8" />}
+  title="Competitions"
+  description="Participate in coding and technical competitions to gain knowledge and showcase your talents."
+  delay={0.4}
+/>
+
+<FeatureCard
+  icon={<img src="/models/updates.svg" alt="Updates" className="w-7 h-7 md:w-8 md:h-8" />}
+  title="Real-time Updates"
+  description="Get instant details about event changes."
+  delay={0.6}
+/>
+
+
           </div>
         </div>
       </section>
