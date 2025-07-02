@@ -335,7 +335,9 @@ export default function HomePage() {
                   <div className="text-sm text-gray-600">
                     🧑‍💼 {item.organiser || "Unknown Organiser"}
                   </div>
-
+                <div className="text-sm text-gray-600">
+                    🏆{item.prize || "Unknown Organiser"}
+                  </div>
                   {/* ⏳ Days Left */}
                   <div className="text-sm text-gray-600">
                     ⏳ {item.daysLeft} 
