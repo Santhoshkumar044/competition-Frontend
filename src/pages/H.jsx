@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef,useState } from "react";
 import { 
   FaPhoneAlt, 
   FaLinkedin, 
@@ -8,7 +8,7 @@ import {
   FaMapMarkerAlt,
   FaCalendarAlt,
   FaTrophy,
-  FaBell
+  FaBell,FaChevronLeft, FaChevronRight
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -86,6 +86,51 @@ const FeatureCard = ({ icon, title, description, delay }) => (
 export default function HomePage() {
   const circleRef = useRef(null);
   const navigate = useNavigate();
+  const [latestApproved, setLatestApproved] = useState([]);
+  const scrollRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const totalPages = latestApproved.slice(0, 6).length;
+
+  const goToSlide = (index) => {
+    setCurrentPage(index);
+  };
+
+  useEffect(() => {
+    if (isHovered || totalPages <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentPage((prev) => (prev + 1) % totalPages);
+    }, 3000); 
+
+    return () => clearInterval(interval);
+  }, [currentPage, isHovered, totalPages]);
+
+
+  useEffect(() => {
+    const fetchLatestApproved = async () => {
+      try {
+        const res = await fetch("/api/host/competitions/approved/latest");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        setLatestApproved(data);
+      } catch (err) {
+        console.error("❌ Error fetching latest competitions:", err);
+      }
+    };
+
+    fetchLatestApproved();
+  }, []);
+    // useEffect(() => {
+    //   if (isHovered) return;
+
+    //   const interval = setInterval(() => {
+    //     scrollContainerBy(1);
+    //   }, 4000);
+
+    //   return () => clearInterval(interval);
+    // }, [isHovered, currentPage]);
 
   useEffect(() => {
     const circlePos = JSON.parse(localStorage.getItem("circlePos"));
@@ -258,18 +303,83 @@ export default function HomePage() {
         </div>
       </section>
       {/* Horizontal Scrollable Card Section */}
-<section className="relative z-10 px-4 md:px-8 py-8 bg-white bg-opacity-60 backdrop-blur-md">
+ {/* <section className="relative z-10 px-4 md:px-8 py-8 bg-white bg-opacity-60 backdrop-blur-md">
   <h2 className="text-2xl md:text-3xl font-bold text-[#4B3F72] mb-6 text-center">What's Trending</h2>
 
   <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-thin scrollbar-thumb-[#4B3F72]/60 scrollbar-track-transparent">
-    {[...Array(6)].map((_, index) => (
+    {latestApproved.length === 0 ? (
+    [...Array(6)].map((_, index) => (
       <div
         key={index}
-        className="min-w-[250px] sm:min-w-[300px] h-40 sm:h-48 bg-white border border-[#E3DFFF] shadow-md rounded-xl flex items-center justify-center text-[#4B3F72] font-semibold text-lg flex-shrink-0"
+        className="min-w-[250px] sm:min-w-[300px] h-40 sm:h-48 bg-gray-100 animate-pulse rounded-xl flex items-center justify-center text-[#4B3F72] font-semibold text-lg flex-shrink-0"
       >
-        Card {index + 1}
+        Loading...
       </div>
-    ))}
+    ))
+    ) : (
+      latestApproved.map((item) => (
+        <div
+          key={item._id}
+          onClick={()=> navigate("/Login")}
+          className="min-w-[250px] sm:min-w-[300px] h-40 sm:h-48 bg-white border border-[#E3DFFF] shadow-md rounded-xl p-4 flex flex-col justify-between flex-shrink-0"
+         >
+          <div className="text-sm font-semibold text-[#4B3F72] truncate">
+            {item.title}
+          </div>
+          <div className="text-xs text-gray-600 mt-2 truncate">
+            📍 {item.location}
+          </div>
+          <div className="text-xs text-gray-600 truncate">
+            ⏳ {item.daysLeftText}
+          </div>
+        </div>
+      ))
+    )}
+    </div>
+  </section> */}
+<section className="relative z-10 px-0 py-8 bg-white bg-opacity-60 backdrop-blur-md">
+  <h2 className="text-2xl md:text-3xl font-bold text-[#4B3F72] mb-6 text-center">What's Trending</h2>
+
+  <div className="relative w-full overflow-hidden">
+    <div
+      ref={scrollRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="flex transition-transform duration-700 ease-in-out"
+      style={{ transform: `translateX(-${currentPage * 100}%)` }}
+    >
+      {latestApproved.slice(0, 6).map((item) => (
+        <div
+          key={item._id}
+          onClick={() => navigate("/Login")}
+          className="w-full flex-shrink-0 px-4 sm:px-16 md:px-28 lg:px-40"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white border border-[#E3DFFF] shadow-md rounded-xl p-6 h-60 flex flex-col justify-between hover:shadow-lg transition-all"
+          >
+            <div className="text-lg font-bold text-[#4B3F72]">{item.title}</div>
+            <div className="text-sm text-gray-600">📍 {item.location}</div>
+            <div className="text-sm text-gray-600">⏳ {item.daysLeftText}</div>
+          </motion.div>
+        </div>
+      ))}
+    </div>
+
+    {/* Dots */}
+    <div className="mt-4 flex justify-center space-x-2">
+      {latestApproved.slice(0, 6).map((_, index) => (
+        <button
+          key={index}
+          onClick={() => goToSlide(index)}
+          className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            index === currentPage ? "bg-[#4B3F72]" : "bg-gray-300"
+          }`}
+        />
+      ))}
+    </div>
   </div>
 </section>
 
