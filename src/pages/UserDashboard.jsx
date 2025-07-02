@@ -1,5 +1,5 @@
 
-
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
@@ -134,7 +134,7 @@ const handleParticipationSubmit = async () => {
     const data = await res.json();
 
     if (res.ok) {
-      toast.success("✅ Registration successful!");
+      toast.success("Thank you for confirming!");
       setShowParticipationDialog(false);
       setParticipationType("");
       setTeamDetails({ name: "", members: [""] });
@@ -284,8 +284,7 @@ const handleParticipationSubmit = async () => {
       (item.organiser && item.organiser.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [activeTab, competitions, events, searchTerm]);
-
-  const CompetitionCard = ({ item, onConfirm, isRecommended }) => {
+  const CompetitionCard = React.memo(({ item, onConfirm, isRecommended }) => {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -303,7 +302,7 @@ const handleParticipationSubmit = async () => {
               whileHover={{ scale: 1.1 }}
               className="px-2 py-0.5 text-xs font-medium bg-[#E3DFFF] text-[#4B3F72] rounded-full"
             >
-              Suggested
+              Recommended
             </motion.span>
           ) : (
             <motion.span
@@ -317,7 +316,11 @@ const handleParticipationSubmit = async () => {
 
         <div className="space-y-2 text-xs text-gray-600 mb-4">
           <div className="flex items-center">
-            📍 <span className="ml-2">{item.location}</span>
+            📍 <span className="ml-2">
+              {(!item.location?.trim() || item.location.trim().toLowerCase() === item.organiser?.trim()?.toLowerCase())
+                ? "Online"
+                : item.location.trim()}
+            </span>
           </div>
           <div className="flex items-center">
             🧑‍💼 <span className="ml-2">Organized by: {item.organiser}</span>
@@ -360,7 +363,7 @@ const handleParticipationSubmit = async () => {
         </div>
       </motion.div>
     );
-  };
+  });
 
   if (loading) {
     return (
@@ -532,7 +535,7 @@ const handleParticipationSubmit = async () => {
         </motion.div>
 
         <div className="mb-8">
-          {activeTab === "competitions" && recommendedCompetitions.length > 0 && (
+          {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" &&(
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -902,25 +905,87 @@ const handleParticipationSubmit = async () => {
                   allCompetitions.find(c => c._id === item.competitionId)?.title ||
                   item.competitionId;
                 return (
+                  // <li
+                  //   key={item.competitionId}
+                  //   className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded"
+                  //  >
+                  //   <span className="text-sm text-[#3A315A] break-words max-w-[60%]">
+                  //     {compTitle}
+                  //   </span>
+                  //   <button
+                  //     className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A] transition"
+                  //     onClick={async () => {
+                  //       if (user?.email) {
+                  //         await confirmViewedCompetition(user.email, item.competitionId);
+                  //       }
+                  //       setShowUnconfirmedPopup(false);
+                  //       handleConfirmClick(item.competitionId);
+                  //     }}
+                  //   >
+                  //     Confirm
+                  //   </button>
+                  //     <button
+                  //       className="text-xs px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
+                  //       onClick={() => {
+                  //         setUnconfirmedCompetitions((prev) =>
+                  //           prev.filter((c) => c.competitionId !== item.competitionId)
+                  //         );
+                  //       }}
+                  //      >
+                  //       Skip
+                  //     </button>
+                  // </li>
                   <li
                     key={item.competitionId}
-                    className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded"
-                  >
-                    <span className="text-sm text-[#3A315A] break-words max-w-[60%]">
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 bg-gray-100 px-3 py-2 rounded"
+                   >
+                    <span className="text-sm text-[#3A315A] break-words max-w-full sm:max-w-[60%]">
                       {compTitle}
                     </span>
-                    <button
-                      className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A] transition"
-                      onClick={async () => {
-                        if (user?.email) {
-                          await confirmViewedCompetition(user.email, item.competitionId);
-                        }
-                        setShowUnconfirmedPopup(false);
-                        handleConfirmClick(item.competitionId);
-                      }}
-                    >
-                      Confirm
-                    </button>
+
+                    <div className="flex gap-2">
+                      <button
+                        className="text-xs px-3 py-1 bg-[#4B3F72] text-white rounded hover:bg-[#3A315A] transition"
+                        onClick={async () => {
+                          if (user?.email) {
+                            await confirmViewedCompetition(user.email, item.competitionId);
+                          }
+                          setShowUnconfirmedPopup(false);
+                          handleConfirmClick(item.competitionId);
+                        }}
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        className="text-xs px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
+                        // onClick={() => {
+                        //   setUnconfirmedCompetitions((prev) =>
+                        //     prev.filter((c) => c.competitionId !== item.competitionId)
+                        //   );
+                          onClick={async () => {
+                            try {
+                              await fetch("/api/user/skip", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                credentials: "include",
+                                body: JSON.stringify({
+                                  email: user.email,
+                                  competitionId: item.competitionId
+                                }),
+                              });
+
+                              // Remove from list after successful skip
+                              setUnconfirmedCompetitions((prev) =>
+                                prev.filter((c) => c.competitionId !== item.competitionId)
+                              );
+                            } catch (err) {
+                              console.error("Failed to skip competition:", err);
+                            }
+                        }}
+                      >
+                        Not interested
+                      </button>
+                    </div>
                   </li>
                 );
               })}
