@@ -111,7 +111,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchLatestApproved = async () => {
       try {
-        const res = await fetch("/api/host/competitions/approved/latest");
+        const res = await fetch("/api/competitions/approved/latest");//edited this api call to access the latest approved competition
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         setLatestApproved(data);
