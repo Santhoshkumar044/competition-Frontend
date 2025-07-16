@@ -246,7 +246,7 @@ export default function HomePage() {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#4B3F72] leading-tight"
             >
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4B3F72] to-[#3A315A]">
-                Campus Connect
+                GrindUp
               </span>
             </motion.h1>
             <motion.h2 
@@ -373,7 +373,7 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#4B3F72] mb-3 md:mb-4">Why Choose Campus Connect?</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#4B3F72] mb-3 md:mb-4">Why Choose GrindUp?</h2>
             <p className="text-base md:text-lg text-[#4B3F72] opacity-80 max-w-2xl mx-auto">
               Designed specifically for CIT students to enhance campus engagement and participation
             </p>
@@ -465,7 +465,7 @@ export default function HomePage() {
               transition={{ delay: 0.2 }}
               className="space-y-3 md:space-y-4"
             >
-              <h3 className="text-xl md:text-2xl font-bold">Campus Connect</h3>
+              <h3 className="text-xl md:text-2xl font-bold">Grind Up</h3>
               <p className="opacity-80 text-sm md:text-base">
                 The official events and competitions platform for CIT Chennai students.
               </p>

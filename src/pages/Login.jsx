@@ -9,7 +9,7 @@ export default function Login() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white font-['Outfit'] px-4 py-8 sm:p-0">
       <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-2 sm:mb-3 md:mb-4 text-center">
-        Campus Connect
+        GrindUp
       </h1>
       <p className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-4 sm:mb-5 md:mb-6 text-center">
         Chennai Institute of Technology

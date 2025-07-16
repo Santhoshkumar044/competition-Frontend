@@ -47,7 +47,7 @@ export default function HomePage() {
       {/* Final State: Text with Circle */}
       {stage === "showText" && (
         <div className="flex flex-col sm:flex-row items-center sm:space-x-4 z-10 space-y-4 sm:space-y-0">
-          <Typewriter text="CAMPUS CONNECT" speed={100} />
+          <Typewriter text="GrindUp" speed={100} />
           <div
             ref={circleRef}
             className={`w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 ${
