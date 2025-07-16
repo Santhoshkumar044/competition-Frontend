@@ -277,15 +277,32 @@ const handleParticipationSubmit = async () => {
 
   const filteredItems = useMemo(() => {
   const items = activeTab === "competitions" ? competitions : events;
-
+ //filters
   return items.filter((item) => {
     const matchesSearch =
       item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.organiser?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesDaysLeft =
-      !daysLeftFilter || (item.daysLeft && item.daysLeft <= Number(daysLeftFilter));
+    let daysLeft = null;
+    let isDays = false;
+    if (item.daysLeft !== undefined && item.daysLeft !== null) {
+      const str = String(item.daysLeft).toLowerCase();
+      if (str.includes("day")) {
+        const match = str.match(/\d+/);
+        if (match) {
+          daysLeft = Number(match[0]);
+          isDays = true;
+        }
+      }
+    }
+    const filterValue = Number(daysLeftFilter);
+
+    let matchesDaysLeft = true;
+    if (daysLeftFilter) {
+      // Only show items with a valid daysLeft in days and less than filterValue
+      matchesDaysLeft = isDays && daysLeft !== null && daysLeft < filterValue;
+    }
 
     return matchesSearch && matchesDaysLeft;
   });
@@ -536,6 +553,23 @@ const handleParticipationSubmit = async () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+            </div>
+            {/* Days Left Filter Dropdown */}
+            <div className="w-full md:w-auto flex-shrink-0 md:ml-2 mt-2 md:mt-0">
+              <select
+                className="block w-full md:w-auto px-3 py-2 border border-[#DCD8F1] rounded-lg bg-[#E3DFFF] text-[#4B3F72] focus:ring-2 focus:ring-[#4B3F72] focus:border-[#4B3F72] transition-all shadow-sm"
+                value={daysLeftFilter}
+                onChange={e => setDaysLeftFilter(e.target.value)}
+              >
+                <option value="">All Days Left</option>
+                <option value="10">{'< 10 days'}</option>
+                <option value="20">{'< 20 days'}</option>
+                <option value="30">{'< 1 month'}</option>
+                <option value="60">{'< 2 months'}</option>
+                <option value="90">{'< 3 months'}</option>
+                <option value="180">{'< 6 months'}</option>
+                <option value="365">{'< 1 year'}</option>
+              </select>
             </div>
           </div>
         </motion.div>
