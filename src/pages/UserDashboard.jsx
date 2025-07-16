@@ -557,7 +557,8 @@ const handleParticipationSubmit = async () => {
             {/* Days Left Filter Dropdown */}
             <div className="w-full md:w-auto flex-shrink-0 md:ml-2 mt-2 md:mt-0">
               <select
-                className="block w-full md:w-auto px-3 py-2 border border-[#DCD8F1] rounded-lg bg-[#E3DFFF] text-[#4B3F72] focus:ring-2 focus:ring-[#4B3F72] focus:border-[#4B3F72] transition-all shadow-sm"
+                className="block w-full md:w-auto px-3 py-2 rounded-lg bg-[#E3DFFF] text-[#4B3F72] 
+                          focus:outline-none focus:ring-0 focus:border-none border-none shadow-sm transition-all"
                 value={daysLeftFilter}
                 onChange={e => setDaysLeftFilter(e.target.value)}
               >
@@ -569,8 +570,9 @@ const handleParticipationSubmit = async () => {
                 <option value="60">{'< 2 months'}</option>
                 <option value="90">{'< 3 months'}</option>
                 <option value="180">{'< 6 months'}</option>
-              </select>
-            </div>
+                </select>
+              </div>
+
           </div>
         </motion.div>
         
