@@ -562,13 +562,13 @@ const handleParticipationSubmit = async () => {
                 onChange={e => setDaysLeftFilter(e.target.value)}
               >
                 <option value="">All Days Left</option>
+                <option value="5">{'< 5 days'}</option>
                 <option value="10">{'< 10 days'}</option>
                 <option value="20">{'< 20 days'}</option>
                 <option value="30">{'< 1 month'}</option>
                 <option value="60">{'< 2 months'}</option>
                 <option value="90">{'< 3 months'}</option>
                 <option value="180">{'< 6 months'}</option>
-                <option value="365">{'< 1 year'}</option>
               </select>
             </div>
           </div>
@@ -576,7 +576,7 @@ const handleParticipationSubmit = async () => {
         
         {/* Recommended Carousel */}
         <div className="mb-8">
-          {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" && (
+          {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" && daysLeftFilter === "" && (
             <RecommendationCarousel
               recommendedCompetitions={recommendedCompetitions}
               user={user}
