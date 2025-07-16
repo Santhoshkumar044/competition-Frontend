@@ -6,6 +6,7 @@ import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 
 const _motion = motion;
 
@@ -19,9 +20,14 @@ export default function UserDashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const scrollref =useRef(null);
+  const [currentPage, setCurrentPage] = useState(0);
   const [unconfirmedCompetitions, setUnconfirmedCompetitions] = useState([]);
   const [showUnconfirmedPopup, setShowUnconfirmedPopup] = useState(false);
-  
+  const [hoveredRecommended, setHoveredRecommended] = useState(false);
+  const [daysLeftFilter, setDaysLeftFilter] = useState("");
+
+  const totalRecommended = recommendedCompetitions.slice(0, 6).length;
 
   // Event registration states
   const [selectedEventId, setSelectedEventId] = useState(null);
@@ -219,7 +225,22 @@ const handleParticipationSubmit = async () => {
       console.error("Error fetching recommendations:", error);
     }
   };
+const goToSlide = (index) => {
+  setCurrentPage(index);
+};
 
+// Auto-slide every 5 seconds when not hovered
+useEffect(() => {
+  if (hoveredRecommended) return;
+
+  const interval = setInterval(() => {
+    setCurrentPage((prev) =>
+      prev === Math.min(recommendedCompetitions.length, 6) - 1 ? 0 : prev + 1
+    );
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [hoveredRecommended, recommendedCompetitions]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -277,13 +298,20 @@ const handleParticipationSubmit = async () => {
   }, [showParticipationDialog, unconfirmedCompetitions.length]);
 
   const filteredItems = useMemo(() => {
-    const items = activeTab === "competitions" ? competitions : events;
-    return items.filter((item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.location && item.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.organiser && item.organiser.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [activeTab, competitions, events, searchTerm]);
+  const items = activeTab === "competitions" ? competitions : events;
+
+  return items.filter((item) => {
+    const matchesSearch =
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.organiser?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesDaysLeft =
+      !daysLeftFilter || (item.daysLeft && item.daysLeft <= Number(daysLeftFilter));
+
+    return matchesSearch && matchesDaysLeft;
+  });
+}, [activeTab, competitions, events, searchTerm, daysLeftFilter]);
   const CompetitionCard = React.memo(({ item, onConfirm, isRecommended }) => {
     return (
       <motion.div
@@ -390,12 +418,12 @@ const handleParticipationSubmit = async () => {
       />
 
       {/* Header */}
-      <motion.header 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="bg-[#dcd8f1] shadow-sm sticky top-0 z-50"
-      >
+      <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-[#dcd8f1] shadow-sm sticky top-0 z-50"
+    >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-between items-center h-16">
             <div className="flex space-x-4 sm:space-x-8">
@@ -533,9 +561,89 @@ const handleParticipationSubmit = async () => {
             </div>
           </div>
         </motion.div>
-
+        
+        {/* Recommended Carousel */}
         <div className="mb-8">
-          {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" &&(
+          {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" && (
+  <section className="relative z-10 px-0 py-8 bg-white bg-opacity-60 backdrop-blur-md mb-12">
+    <h2 className="text-2xl md:text-3xl font-bold text-[#4B3F72] mb-2 text-center">Recommended For You</h2>
+    <p className="text-center text-gray-500 mb-4">
+      Based on your interest in {user?.domain || "your field"}
+    </p>
+    <div className="text-sm text-center text-[#4B3F72] bg-[#E3DFFF] bg-opacity-30 px-3 py-1 rounded-full w-fit mx-auto mb-6">
+      {recommendedCompetitions.length} suggestions
+    </div>
+
+    <div className="relative w-full overflow-hidden">
+      <div
+        ref={scrollref}
+        onMouseEnter={() => setHoveredRecommended(true)}
+        onMouseLeave={() => setHoveredRecommended(false)}
+        className="flex transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateX(-${currentPage * 100}%)` }}
+      >
+        {recommendedCompetitions.slice(0, 6).map((item) => (
+          <div
+            key={item._id}
+            className="w-full flex-shrink-0 px-4 sm:px-16 md:px-28 lg:px-40"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white border border-[#E3DFFF] shadow-md rounded-xl p-6 h-60 flex flex-col justify-between hover:shadow-lg transition-all"
+            >
+              <div className="text-lg font-bold text-[#4B3F72]">{item.title}</div>
+              <div className="text-sm text-gray-600">
+                📍 {item.organiser?.trim() === item.location?.trim() ? "Online" : item.location}
+              </div>
+              <div className="text-sm text-gray-600">🧑‍💼 {item.organiser || "Unknown Organiser"}</div>
+              <div className="text-sm text-gray-600">🏆 {item.prize || "N/A"}</div>
+              <div className="text-sm text-gray-600">⏳ {item.daysLeft}</div>
+             <div className="flex gap-2 mt-4">
+        
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.open(item.link, "_blank")}
+                className="px-3 py-1.5 text-sm bg-[#E3DFFF] text-[#4B3F72] rounded-md hover:bg-[#d5d0f0] transition"
+              >
+                <FaExternalLinkAlt className="inline mr-1" />
+                View
+              </motion.button>
+
+        
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleConfirmClick(item._id)} // You should define this handler
+                className="px-3 py-1.5 text-sm bg-[#FFF4E0] text-[#D4A017] rounded-md hover:bg-[#f8e3a0] transition"
+              >
+                Confirm
+              </motion.button>
+            </div>
+            </motion.div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dots for navigation */}
+      <div className="mt-4 flex justify-center space-x-2">
+        {recommendedCompetitions.slice(0, 6).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentPage ? "bg-[#4B3F72]" : "bg-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+          {/* {activeTab === "competitions" && recommendedCompetitions.length > 0 && searchTerm.trim() === "" &&(
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -567,7 +675,7 @@ const handleParticipationSubmit = async () => {
                 ))}
               </div>
             </motion.div>
-          )}
+          )} */}
 
           <motion.div 
             initial={{ opacity: 0 }}
