@@ -17,7 +17,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import TemplatePage from "./pages/Template";
 import ConfirmedCompetitions from './pages/ConfirmedCompetitions';
-
+import OauthSuccessPage from "./pages/loadingPage";
 export default function App() {
   return (
     <Router>
@@ -49,6 +49,7 @@ export default function App() {
         <Route path="/template" element={<TemplatePage />} />
         <Route path="/confirmed-competitions" element={<ConfirmedCompetitions />} />
 
+        <Route path="/oauth-success" element={<OauthSuccessPage />} />
       </Routes>
     </Router>
   );

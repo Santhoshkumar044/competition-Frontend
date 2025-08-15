@@ -520,7 +520,7 @@ const handleApprove = async (competitionId) => {
                     </motion.button>
                     <motion.button 
                       whileHover={{ x: 5, backgroundColor: "#E3DFFF" }}
-                      onClick={() => window.location.href = "/auth/logout"}
+                      onClick={() => window.location.href = "https://grindupcit.vercel.app/"}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#4B3F72] transition-colors items-center"
                     >
                       <svg className="w-4 h-4 mr-2 text-[#4B3F72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
