@@ -6,7 +6,7 @@ import { FaSearch, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUserTie, FaTrophy, 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { BASEURL } from "../config.js";
 const _motion = motion;
 
 export default function UserDashboard() {
@@ -50,7 +50,7 @@ export default function UserDashboard() {
   const confirmEventRegistration = async () => {
     setRegistering(true);
     try {
-      const res = await fetch("/api/events/confirm-register", {
+      const res = await fetch(`${BASEURL}/api/events/confirm-register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,7 +61,7 @@ export default function UserDashboard() {
       
       if (res.ok) {
         toast.success("Successfully registered for the event! 🎉");
-        const eventsRes = await fetch("/api/events");
+        const eventsRes = await fetch(`${BASEURL}/api/events`);
         if (eventsRes.ok) {
           const updatedEvents = await eventsRes.json();
           setEvents(updatedEvents);
@@ -125,7 +125,7 @@ const handleParticipationSubmit = async () => {
 
   setRegistering(true);
   try {
-    const res = await fetch("/api/competition/confirm-register", {
+    const res = await fetch(`${BASEURL}/api/competition/confirm-register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -140,7 +140,7 @@ const handleParticipationSubmit = async () => {
       setParticipationType("");
       setTeamDetails({ name: "", members: [""] });
 
-      const competitionsRes = await fetch("/api/competitions");
+      const competitionsRes = await fetch(`${BASEURL}/api/competitions`);
       if (competitionsRes.ok) {
         setCompetitions(await competitionsRes.json());
       }
@@ -186,7 +186,7 @@ const handleParticipationSubmit = async () => {
   };
     const markAsViewed = async (email, competitionId) => {
       try {
-        await fetch("/api/user/view", {
+        await fetch(`${BASEURL}/api/user/view`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -199,7 +199,7 @@ const handleParticipationSubmit = async () => {
 
     const confirmViewedCompetition = async (email, competitionId) => {
       try {
-        await fetch("/api/user/confirm", {
+        await fetch(`${BASEURL}/api/user/confirm`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -212,7 +212,7 @@ const handleParticipationSubmit = async () => {
   // Data fetching
   const fetchRecommendedCompetitions = async (userId) => {
     try {
-      const res = await fetch(`/api/recommend/${userId}`);
+      const res = await fetch(`${BASEURL}/api/recommend/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch recommendations");
       const data = await res.json();
       setRecommendedCompetitions(data.data);
@@ -223,14 +223,14 @@ const handleParticipationSubmit = async () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await fetch("/api/profile/me", {
+        const userRes = await fetch(`${BASEURL}/api/profile/me`, {
           credentials: "include"
         });
         if (!userRes.ok) throw new Error("Failed to fetch user profile");
         const userData = await userRes.json();
         setUser(userData);
         if (userData?.email) {
-  const res = await fetch(`/api/user/unconfirmed/${userData.email}`);
+  const res = await fetch(`${BASEURL}/api/user/unconfirmed/${userData.email}`);
   if (res.ok) {
     const data = await res.json();
     if (data.length > 0) {
@@ -245,7 +245,7 @@ const handleParticipationSubmit = async () => {
           await fetchRecommendedCompetitions(userData._id);
         }
 
-        const url = activeTab === "competitions" ? "/api/competitions" : "/api/events";
+        const url = activeTab === "competitions" ? `${BASEURL}/api/competitions` : `${BASEURL}/api/events`;
         const dataRes = await fetch(url);
         if (!dataRes.ok) throw new Error(`Failed to fetch ${activeTab}`);
         const itemsData = await dataRes.json();
@@ -979,7 +979,7 @@ const handleParticipationSubmit = async () => {
                        
                           onClick={async () => {
                             try {
-                              await fetch("/api/user/skip", {
+                              await fetch(`${BASEURL}/api/user/skip`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 credentials: "include",

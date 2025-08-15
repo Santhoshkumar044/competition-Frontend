@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
-
+import {BASEURL} from '../config.js';
 console.log(motion);
 export default function CreateCompetition() {
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ export default function CreateCompetition() {
     };
 
     try {
-      const response = await fetch("/api/competitions", {
+      const response = await fetch(`${BASEURL}/api/competitions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

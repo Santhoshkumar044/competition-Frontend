@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaSave, FaTimes } from "react-icons/fa";
+import { BASEURL } from "../config.js";
 
 const _motion = motion;
 const BubbleBackground = () => {
@@ -82,7 +83,7 @@ export default function EditCompetition() {
       });
       setLoading(false);
     } else {
-      fetch(`/api/competitions/${id}`)
+      fetch(`${BASEURL}/api/competitions/${id}`)
         .then((res) => res.json())
         .then((data) => {
           setFormData({
@@ -111,7 +112,7 @@ export default function EditCompetition() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/competitions/${id}`, {
+      const res = await fetch(`${BASEURL}/api/competitions/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

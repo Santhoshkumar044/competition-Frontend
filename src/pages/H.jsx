@@ -15,7 +15,7 @@ import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FloatingCampusModel from "../components/FloatingCampusModel";
-
+import { BASEURL } from "../config.js";
 
 
 const _motion = motion;
@@ -111,7 +111,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchLatestApproved = async () => {
       try {
-        const res = await fetch("/api/competitions/approved/latest");//edited this api call to access the latest approved competition
+        const res = await fetch(`${BASEURL}/api/competitions/approved/latest`);//edited this api call to access the latest approved competition
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         setLatestApproved(data);

@@ -67,18 +67,4 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    proxy: {
-      '/auth': {
-        target: 'http://localhost:5000', // replace with your backend port
-        changeOrigin: true,
-        secure: false,
-      },
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-    },
-    },
-  },
 })

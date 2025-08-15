@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaPlus, FaCalendarAlt, FaClock, FaUniversity, FaDoorOpen, FaHeading, FaAlignLeft } from "react-icons/fa";
+import { BASEURL } from "../config.js";
 const _motion = motion;
 export default function CreateEvent() {
   const [formData, setFormData] = useState({
@@ -56,7 +57,7 @@ export default function CreateEvent() {
       };
 
 
-      const response = await fetch("/api/events", {
+      const response = await fetch(`${BASEURL}/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

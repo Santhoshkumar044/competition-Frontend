@@ -5,6 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaEdit, FaTrash, FaExternalLinkAlt, FaChartBar, FaTimes, FaPlus, FaUserCircle, FaArrowLeft } from "react-icons/fa";
+import { BASEURL } from "../config.js";
+
 const _motion = motion;
 export default function TemplatePage() {
   const [templates, setTemplates] = useState([]);
@@ -125,7 +127,7 @@ export default function TemplatePage() {
         endTime: templateToPost.endTime
       };
 
-      const response = await fetch("/api/events", {
+      const response = await fetch(`${BASEURL}/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

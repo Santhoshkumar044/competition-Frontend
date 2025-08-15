@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaClock } from "react-icon
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-
+import { BASEURL } from "../config.js";
 const _motion = motion;
 export default function ConfirmedCompetitions() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function ConfirmedCompetitions() {
     const fetchData = async () => {
       try {
         // Fetch user profile
-        const userRes = await fetch("/api/profile/me", {
+        const userRes = await fetch(`${BASEURL}/api/profile/me`, {
           credentials: "include"
         });
         
@@ -26,7 +26,7 @@ export default function ConfirmedCompetitions() {
         setUser(userData);
 
         // Fetch confirmed competitions for this user
-        const competitionsRes = await fetch(`/api/competition-confirmations/user/${userData._id}`);
+        const competitionsRes = await fetch(`${BASEURL}/api/competition-confirmations/user/${userData._id}`);
         
         if (!competitionsRes.ok) throw new Error("Failed to fetch confirmed competitions");
         const competitionsData = await competitionsRes.json();

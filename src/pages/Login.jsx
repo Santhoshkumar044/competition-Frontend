@@ -1,9 +1,9 @@
 
 import { FcGoogle } from "react-icons/fc";
-
+import { BASEURL } from "../config.js";
 export default function Login() {
   const handleGoogleLogin = () => {
-    window.location.href = "/auth/google";
+    window.location.href = `${BASEURL}/auth/google`;
   };
 
   return (
