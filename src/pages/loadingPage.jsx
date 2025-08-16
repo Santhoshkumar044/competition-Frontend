@@ -6,19 +6,32 @@ const OauthSuccessPage = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Read query params from URL
     const params = new URLSearchParams(location.search);
     const role = params.get('role');
     const hasProfile = params.get('hasProfile') === 'true';
 
-    // Route based on params
-    if (role === 'host' && hasProfile) {
-      navigate('/host-dashboard');
-    } else if (hasProfile) {
-      navigate('/user');
-    } else {
-      navigate('/login');
-    }
+    // CRITICAL: First, make authenticated fetch to backend!
+    fetch('https://competition-backend-1-ewes.onrender.com/current-user', {
+      credentials: 'include',
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(user => {
+        // Now apply routing logic after backend confirms session!
+        if (!user) {
+          navigate('/login');
+          return;
+        }
+        if (role === 'host') {
+          navigate('/host-dashboard');
+        } else if (hasProfile) {
+          navigate('/user');
+        } else {
+          navigate('/profile');
+        }
+      })
+      .catch(() => {
+        navigate('/login');
+      });
   }, [location, navigate]);
 
   return (
