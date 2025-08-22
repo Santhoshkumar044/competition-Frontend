@@ -49,7 +49,7 @@ export default function App() {
         <Route path="/template" element={<TemplatePage />} />
         <Route path="/confirmed-competitions" element={<ConfirmedCompetitions />} />
 
-        <Route path="/oauth-success" element={<OauthSuccessPage />} />
+        {/* <Route path="/oauth-success" element={<OauthSuccessPage />} /> */}
       </Routes>
     </Router>
   );
